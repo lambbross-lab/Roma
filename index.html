@@ -1,0 +1,2382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Roma 🇮🇹">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Roma 🇮🇹">
+<meta name="theme-color" content="#1a0a00">
+<meta name="description" content="Guía de viaje Roma Semana Santa 2025">
+<!-- PWA manifest inline via data URI -->
+<link rel="manifest" id="pwa-manifest">
+<!-- Apple touch icon generado inline -->
+<link rel="apple-touch-icon" id="apple-icon">
+<title>Roma 🇮🇹 Erasmus 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+// ── PWA SETUP: manifest + service worker embebidos en el propio HTML ──
+(function() {
+  // 1. Generar icono 192x192 con canvas
+  function makeIcon(size) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    // fondo degradado
+    const g = ctx.createLinearGradient(0,0,size,size);
+    g.addColorStop(0,'#1a0a00'); g.addColorStop(1,'#6b2d0a');
+    ctx.fillStyle = g;
+    ctx.roundRect(0,0,size,size,size*0.2);
+    ctx.fill();
+    // emoji centrado
+    ctx.font = `${size*0.55}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🇮🇹', size/2, size/2);
+    return c.toDataURL('image/png');
+  }
+
+  // 2. Manifest JSON embebido
+  const icon192 = makeIcon(192);
+  const icon512 = makeIcon(512);
+  const manifest = {
+    name: 'Roma Erasmus 2026',
+    short_name: 'Roma 🇮🇹',
+    description: 'Guía de viaje completa para Roma, Semana Santa 2026',
+    start_url: '.',
+    display: 'standalone',
+    orientation: 'portrait',
+    background_color: '#1a0a00',
+    theme_color: '#1a0a00',
+    lang: 'es',
+    icons: [
+      { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+      { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+  const manifestURL = URL.createObjectURL(manifestBlob);
+  document.getElementById('pwa-manifest').href = manifestURL;
+  document.getElementById('apple-icon').href = icon192;
+
+  // 3. Service Worker inline — cachea el propio HTML para uso offline
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+const CACHE = 'roma-v1';
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', self.location.href])));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
+  ));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./')))
+  );
+});`;
+    const swBlob = new Blob([swCode], {type:'application/javascript'});
+    const swURL = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL, {scope: './'})
+      .catch(() => {}); // silencioso si falla (ej. file://)
+  }
+})();
+</script>
+<style>
+:root {
+  --gold: #c9933a;
+  --gold-light: #e8b86d;
+  --cream: #f5ede0;
+  --dark: #1a0a00;
+  --dark2: #2d1800;
+  --dark3: #3d2400;
+  --red: #8b1a1a;
+  --red2: #c0392b;
+  --green: #1e5631;
+  --text: #3a1e00;
+  --text-light: #6b4423;
+  --white: #fffdf8;
+  --card-bg: rgba(255,253,248,0.97);
+  --shadow: 0 8px 40px rgba(26,10,0,0.18);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Evitar desbordamiento horizontal en cualquier elemento */
+.card, .card-body, .card-desc, .expand-body, .tl-content, .page-pad, .timeline {
+  max-width: 100%;
+  overflow-x: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ====== HERO ====== */
+.hero { position: relative; height: 100vh; min-height: 600px; background: linear-gradient(160deg, #1a0a00 0%, #3d1a00 40%, #6b2d0a 70%, #8b3a0a 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding: 2rem; }
+.hero.hidden { display: none; }
+
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='rgba(201,147,58,0.15)'/%3E%3C/svg%3E") repeat;
+  opacity: 0.6;
+}
+
+.hero-arch {
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 80px;
+  background: var(--cream);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+.colosseum-silhouette {
+  position: absolute;
+  bottom: 60px; left: 0; right: 0;
+  height: 200px;
+  opacity: 0.12;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='xMidYMax meet'%3E%3Cellipse cx='400' cy='160' rx='380' ry='100' fill='%23c9933a'/%3E%3Cellipse cx='400' cy='140' rx='320' ry='75' fill='none' stroke='%23c9933a' stroke-width='8'/%3E%3Cellipse cx='400' cy='120' rx='260' ry='55' fill='none' stroke='%23c9933a' stroke-width='6'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.hero-flag { font-size: 3rem; margin-bottom: 0.5rem; }
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 10vw, 5rem);
+  font-weight: 900;
+  color: var(--gold-light);
+  line-height: 1;
+  letter-spacing: -1px;
+  position: relative;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+.hero-sub {
+  font-size: 1rem;
+  color: rgba(255,220,160,0.8);
+  font-weight: 300;
+  margin-top: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hero-dates {
+  margin-top: 1.5rem;
+  background: rgba(201,147,58,0.2);
+  border: 1px solid rgba(201,147,58,0.4);
+  border-radius: 50px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.85rem;
+  color: var(--gold-light);
+  letter-spacing: 1px;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 100px;
+  font-size: 0.75rem;
+  color: rgba(255,220,160,0.5);
+  animation: bounce 2s infinite;
+  letter-spacing: 1px;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ====== NAV ====== */
+.nav-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--dark2);
+  border-bottom: 1px solid rgba(201,147,58,0.3);
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.nav-bar::-webkit-scrollbar { display: none; }
+.nav-bar-inner {
+  display: inline-flex;
+  gap: 0;
+  padding: 0 0.5rem;
+}
+.nav-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  color: rgba(255,220,160,0.55);
+  text-decoration: none;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none; border-top: none; border-left: none; border-right: none;
+  white-space: nowrap;
+}
+.nav-btn .nav-icon { font-size: 1.1rem; margin-bottom: 2px; }
+.nav-btn.active, .nav-btn:hover {
+  color: var(--gold-light);
+  border-bottom-color: var(--gold);
+}
+
+/* ====== SECTIONS ====== */
+.section { display: none; background: var(--cream); min-height: 100vh; }
+.section.active { display: block; }
+
+/* ====== DAY HEADER ====== */
+.day-header {
+  background: linear-gradient(135deg, var(--dark2) 0%, var(--dark3) 100%);
+  color: var(--cream);
+  padding: 2rem 1.5rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.day-header::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 0; right: 0; height: 30px;
+  background: var(--cream);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+.day-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+.day-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--cream);
+}
+.day-date {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(245,237,224,0.6);
+  font-weight: 300;
+}
+.day-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; display: block; }
+
+/* ====== TIMELINE ====== */
+.timeline { padding: 1.5rem 1rem 2rem; }
+.tl-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.tl-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 48px;
+}
+.tl-time {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--gold);
+  text-align: center;
+  line-height: 1.2;
+  background: var(--dark2);
+  color: var(--gold-light);
+  border-radius: 6px;
+  padding: 3px 5px;
+  white-space: nowrap;
+}
+.tl-line {
+  width: 2px;
+  flex: 1;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  margin-top: 4px;
+  min-height: 20px;
+}
+.tl-content { flex: 1; padding-bottom: 1rem; }
+
+/* ====== CARDS ====== */
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(201,147,58,0.15);
+}
+.card-header {
+  padding: 1rem 1.2rem 0.8rem;
+  border-bottom: 1px solid rgba(201,147,58,0.1);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+.card-header > div:not(.card-icon) {
+  flex: 1;
+  min-width: 0;
+}
+.card-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.card-icon.cultura { background: linear-gradient(135deg, #8b1a1a, #c0392b); }
+.card-icon.comida { background: linear-gradient(135deg, #1e5631, #27ae60); }
+.card-icon.tip { background: linear-gradient(135deg, #1a5276, #2980b9); }
+.card-icon.secret { background: linear-gradient(135deg, #4a1942, #8e44ad); }
+.card-icon.gelato { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+.card-icon.transporte { background: linear-gradient(135deg, #1e3a5f, #2471a3); }
+
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.25;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.card-subtitle {
+  font-size: 0.72rem;
+  color: var(--gold);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.card-body { padding: 0.9rem 1.2rem 1rem; }
+.card-desc {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+/* ====== EXPANDABLE ====== */
+.expand-toggle {
+  width: 100%;
+  background: none; border: none;
+  padding: 0.6rem 1.2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-top: 1px solid rgba(201,147,58,0.12);
+  font-family: 'DM Sans', sans-serif;
+}
+.expand-toggle .arr { transition: transform 0.3s; font-size: 0.7rem; }
+.expand-toggle.open .arr { transform: rotate(180deg); }
+.expand-body { display: none; padding: 0 1.2rem 1rem; }
+.expand-body.open { display: block; }
+
+/* ====== INFO ROWS ====== */
+.info-row {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(201,147,58,0.1);
+}
+.info-row:last-child { border-bottom: none; }
+.info-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 0.3rem;
+}
+.info-val {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.info-val a { color: var(--red2); text-decoration: none; }
+
+/* ====== HIGHLIGHT PILLS ====== */
+.pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+.pill {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  background: rgba(201,147,58,0.12);
+  color: var(--gold);
+  border: 1px solid rgba(201,147,58,0.25);
+}
+.pill.red { background: rgba(192,57,43,0.1); color: var(--red2); border-color: rgba(192,57,43,0.2); }
+.pill.green { background: rgba(30,86,49,0.1); color: var(--green); border-color: rgba(30,86,49,0.2); }
+
+/* ====== RESTAURANT ====== */
+.resto-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--green);
+}
+.resto-type {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-light);
+  margin-bottom: 2px;
+}
+
+/* ====== SECTION TITLE ====== */
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--dark);
+  padding: 1.5rem 1rem 0.5rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.sec-divider {
+  height: 2px;
+  background: linear-gradient(to right, var(--gold), transparent);
+  margin: 0 1rem 1rem;
+}
+
+/* ====== TRANSPORT ====== */
+.transport-hero {
+  background: linear-gradient(135deg, #0a1628, #1e3a5f);
+  color: white;
+  padding: 2rem 1.5rem 1.8rem;
+  position: relative;
+  overflow: hidden;
+}
+.transport-hero::after {
+  content: '🚌';
+  position: absolute;
+  right: 1rem; bottom: 0.5rem;
+  font-size: 5rem;
+  opacity: 0.08;
+}
+.transport-hero h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: #7ec8e3;
+  margin-bottom: 0.3rem;
+}
+.transport-hero p { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+.ticket-card {
+  background: linear-gradient(135deg, #0f2744, #1a3a5c);
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid rgba(126,200,227,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.ticket-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(to right, #7ec8e3, #2471a3);
+}
+.ticket-name {
+  font-weight: 600;
+  color: #7ec8e3;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+.ticket-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.3rem;
+}
+.ticket-desc { font-size: 0.78rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
+.ticket-badge {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: rgba(126,200,227,0.15);
+  border: 1px solid rgba(126,200,227,0.3);
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  color: #7ec8e3;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ====== GASTRO ====== */
+.gastro-hero {
+  background: linear-gradient(135deg, #0f1f0a, #1e4d14);
+  color: white;
+  padding: 2rem 1.5rem 1.8rem;
+}
+.gastro-hero h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: #7dce82;
+  margin-bottom: 0.3rem;
+}
+.gastro-hero p { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+.pasta-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.7rem;
+  border-left: 4px solid var(--red2);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+.pasta-name {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--red2);
+  margin-bottom: 0.3rem;
+}
+.pasta-rule {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 0.3rem;
+}
+.pasta-desc { font-size: 0.82rem; color: var(--text-light); line-height: 1.5; }
+
+/* ====== TIPS PAGE ====== */
+.tips-hero {
+  background: linear-gradient(135deg, #1a0a28, #3a1442);
+  padding: 2rem 1.5rem 1.8rem;
+}
+.tips-hero h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: #c9a8e8;
+  margin-bottom: 0.3rem;
+}
+.tips-hero p { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+
+.tip-item {
+  display: flex;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  align-items: flex-start;
+}
+.tip-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7b2d8b, #c9a8e8);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.tip-text { font-size: 0.85rem; color: var(--text); line-height: 1.55; }
+.tip-text strong { color: var(--dark); }
+
+/* ====== OVERVIEW ====== */
+.overview-day {
+  background: white;
+  border-radius: 14px;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  cursor: pointer;
+}
+.overview-day-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+}
+.overview-day-dot {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.overview-day-info { flex: 1; min-width: 0; }
+.overview-day-num {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-light);
+  margin-bottom: 2px;
+}
+.overview-day-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dark);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.overview-day-date { font-size: 0.75rem; color: var(--text-light); }
+.overview-arrow { color: var(--gold); font-size: 0.8rem; }
+
+/* ====== ALERT ====== */
+.alert {
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+.alert.warn { background: rgba(230,126,34,0.12); border-left: 4px solid #e67e22; color: #7a4500; }
+.alert.info { background: rgba(41,128,185,0.1); border-left: 4px solid #2980b9; color: #0f3050; }
+.alert.success { background: rgba(30,86,49,0.1); border-left: 4px solid #1e5631; color: #1a3d22; }
+.alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ====== SEMANA SANTA ALERT ====== */
+.ss-banner {
+  background: linear-gradient(135deg, #8b1a1a, #c0392b);
+  color: white;
+  padding: 1rem 1.2rem;
+  margin: 1rem;
+  border-radius: 14px;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+.ss-banner strong { color: #ffcdd2; display: block; font-size: 0.9rem; margin-bottom: 0.2rem; }
+
+/* ====== PAGES padding ====== */
+.page-pad { padding: 0 1rem; }
+.pb3 { padding-bottom: 3rem; }
+
+/* FRASE */
+.frase {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+.frase span { display: block; font-size: 0.75rem; color: var(--gold); margin-top: 0.5rem; font-style: normal; font-family: 'DM Sans', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 400px) {
+  .card-header { padding: 0.8rem 1rem 0.7rem; gap: 0.6rem; }
+  .card-body { padding: 0.7rem 1rem 0.8rem; }
+  .card-name { font-size: 0.95rem; }
+  .card-subtitle { font-size: 0.68rem; }
+  .card-desc { font-size: 0.83rem; }
+  .info-label { font-size: 0.68rem; min-width: 60px; max-width: 75px; }
+  .info-val { font-size: 0.8rem; }
+  .tl-left { width: 40px; }
+  .tl-time { font-size: 0.6rem; padding: 2px 4px; }
+  .day-title { font-size: 1.6rem; }
+  .timeline { padding: 1rem 0.7rem 2rem; }
+  .page-pad { padding: 0 0.7rem; }
+  .expand-body { padding: 0 1rem 0.8rem; }
+  .ss-banner { margin: 0.7rem; font-size: 0.8rem; }
+  .resto-type { font-size: 0.62rem; }
+}
+
+/* En pantallas muy pequeñas reducir padding extra */
+@media (max-width: 340px) {
+  .card-header { padding: 0.7rem 0.8rem; }
+  .card-body { padding: 0.6rem 0.8rem; }
+}
+
+/* ====== MAP BUTTON ====== */
+.map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #1a6b3a, #27ae60);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(39,174,96,0.3);
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.map-btn:hover, .map-btn:active { background: linear-gradient(135deg, #145a30, #1e8449); transform: scale(0.97); }
+.map-btn .map-icon { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero" id="top">
+  <div class="colosseum-silhouette"></div>
+  <div class="hero-flag">🇮🇹</div>
+  <div class="hero-title">ROMA</div>
+  <div class="hero-sub">Semana Santa · Erasmus 2026</div>
+  <div class="hero-dates">☀️ 29 marzo — 5 abril</div>
+  <div class="scroll-hint">▼ desliza</div>
+  <div class="hero-arch"></div>
+</div>
+
+<!-- ====== NAV ====== -->
+<nav class="nav-bar">
+  <div class="nav-bar-inner">
+    <button class="nav-btn active" onclick="show('overview')" id="btn-overview">
+      <span class="nav-icon">🗓</span>PLAN
+    </button>
+    <button class="nav-btn" onclick="show('d29')" id="btn-d29">
+      <span class="nav-icon">✈️</span>Dom 29
+    </button>
+    <button class="nav-btn" onclick="show('d30')" id="btn-d30">
+      <span class="nav-icon">🏟️</span>Lun 30
+    </button>
+    <button class="nav-btn" onclick="show('d31')" id="btn-d31">
+      <span class="nav-icon">⛪</span>Mar 31
+    </button>
+    <button class="nav-btn" onclick="show('d1')" id="btn-d1">
+      <span class="nav-icon">🌸</span>Mié 1
+    </button>
+    <button class="nav-btn" onclick="show('d2')" id="btn-d2">
+      <span class="nav-icon">🎨</span>Jue 2
+    </button>
+    <button class="nav-btn" onclick="show('d3')" id="btn-d3">
+      <span class="nav-icon">⚰️</span>Vie 3
+    </button>
+    <button class="nav-btn" onclick="show('d4')" id="btn-d4">
+      <span class="nav-icon">🌅</span>Sáb 4
+    </button>
+    <button class="nav-btn" onclick="show('d5')" id="btn-d5">
+      <span class="nav-icon">🛫</span>Dom 5
+    </button>
+    <button class="nav-btn" onclick="show('transport')" id="btn-transport">
+      <span class="nav-icon">🚌</span>TRANSP.
+    </button>
+    <button class="nav-btn" onclick="show('gastro')" id="btn-gastro">
+      <span class="nav-icon">🍝</span>COMIDA
+    </button>
+    <button class="nav-btn" onclick="show('tips')" id="btn-tips">
+      <span class="nav-icon">💡</span>TRUCOS
+    </button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     OVERVIEW
+     ============================================================ -->
+<section class="section active" id="overview">
+  <div class="day-header">
+    <span class="day-emoji">🗓</span>
+    <div class="day-label">Plan general</div>
+    <div class="day-title">7 días en la<br>Ciudad Eterna</div>
+    <div class="day-date">29 marzo — 5 abril 2025</div>
+  </div>
+
+  <div class="ss-banner">
+    <strong>⚠️ Semana Santa en Roma</strong>
+    Es la semana más visitada del año. El Domingo de Ramos es el 13 de abril, pero la Semana Santa papal (procesiones, Vía Crucis, Urbi et Orbi) coincide con vuestra estancia. Habrá mucha gente, algunas calles cortadas y el transporte más lento. Planificad con margen.
+  </div>
+
+  <div class="page-pad pb3">
+    <div class="overview-day" onclick="show('d29')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#2a4a1a,#4a8a2a)">✈️</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 1 · Domingo</div>
+          <div class="overview-day-title">Llegada · Primer paseo · Cena</div>
+          <div class="overview-day-date">29 de marzo · Bienvenidos a Roma</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d30')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#8b1a1a,#c0392b)">🏟️</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 2 · Lunes</div>
+          <div class="overview-day-title">Coliseo, Foro Romano y Aventino</div>
+          <div class="overview-day-date">30 de marzo · 🎟️ Coliseo 10:00h</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d31')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#0f2744,#1e5f9a)">⛪</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 3 · Martes</div>
+          <div class="overview-day-title">Vaticano y Castel Sant'Angelo</div>
+          <div class="overview-day-date">31 de marzo · 🎟️ Museos ~14:30h</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d1')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#1e5631,#27ae60)">🌸</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 4 · Miércoles Santo</div>
+          <div class="overview-day-title">Campo de' Fiori, Ghetto y Trastevere</div>
+          <div class="overview-day-date">1 de abril · Jornada libre</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d2')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#4a1942,#8e44ad)">🎨</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 5 · Jueves Santo</div>
+          <div class="overview-day-title">Galleria Borghese, Trevi y Spagna</div>
+          <div class="overview-day-date">2 de abril · Procesiones por la noche</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d3')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#1a2a3a,#2e4a6a)">⚰️</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 6 · Viernes Santo</div>
+          <div class="overview-day-title">Via Appia y Catacumbas</div>
+          <div class="overview-day-date">3 de abril · Vía Crucis nocturno en el Coliseo</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d4')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#8b3a0a,#c0742b)">🌅</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 7 · Sábado Santo</div>
+          <div class="overview-day-title">Panteón, Piazza Navona y despedida</div>
+          <div class="overview-day-date">4 de abril · Último día completo</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+    <div class="overview-day" onclick="show('d5')">
+      <div class="overview-day-header">
+        <div class="overview-day-dot" style="background:linear-gradient(135deg,#1a3a1a,#2a5a2a)">🛫</div>
+        <div class="overview-day-info">
+          <div class="overview-day-num">Día 8 · Domingo de Resurrección</div>
+          <div class="overview-day-title">Vuelta a casa</div>
+          <div class="overview-day-date">5 de abril · ✈️ Info de vuelo pendiente</div>
+        </div>
+        <div class="overview-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="alert warn" style="margin-top:1rem">
+      <span class="alert-icon">🎟️</span>
+      <span><strong>Entradas ya reservadas:</strong> Coliseo (lunes 30 mar, 10h) · Museos Vaticanos + Capilla Sixtina (martes 31 mar, ~14:30h)</span>
+    </div>
+    <div class="alert info">
+      <span class="alert-icon">👶</span>
+      <span><strong>Viajáis con niños:</strong> Menores de 10 años viajan <strong>gratis</strong> en todo el transporte público de Roma. Llevad agua y snacks siempre.</span>
+    </div>
+
+    <div class="frase">"Roma non è una città, è un mondo."<span>— Antiguo proverbio latino</span></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 29 MARZO — LLEGADA
+     ============================================================ -->
+<section class="section" id="d29">
+  <div class="day-header" style="background:linear-gradient(135deg,#0d2b0d,#1a5c1a)">
+    <span class="day-emoji">✈️</span>
+    <div class="day-label">Día 1 · Domingo 29 de marzo</div>
+    <div class="day-title">Llegada a Roma<br>y primer sabor</div>
+    <div class="day-date">Orientación · Paseo suave · Cena cerca del apartamento</div>
+  </div>
+
+  <div class="alert info" style="margin:1rem">
+    <span class="alert-icon">🏠</span>
+    <span>Vuestro apartamento está en la <strong>zona del Coliseo</strong>. Perfecto: estáis en el corazón de la Roma antigua. Hoy toca instalarse, orientarse y hacer un primer paseo sin presión.</span>
+  </div>
+
+  <div class="timeline">
+
+    <!-- LLEGADA Y ORIENTACIÓN -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">Tarde</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon tip">🗝️</div>
+            <div><div class="card-name">Llegada e instalación</div><div class="card-subtitle">Sin prisas · Primer contacto con el barrio</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Dejad las maletas, cambiaos y salid a explorar el barrio a pie. La zona del Coliseo es uno de los más cargados de historia del mundo — literalmente cada calle tiene dos mil años. No hace falta ir a ningún monumento hoy: el paseo es el plan.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASEO COLISEO EXTERIOR -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">18:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🏟️</div>
+            <div><div class="card-name">El Coliseo desde fuera al atardecer</div><div class="card-subtitle">Gratis · 5 min andando · Imprescindible</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">No entráis hoy (ya tenéis entrada para mañana), pero acercaos a verlo desde fuera al atardecer. La luz dorada sobre el travertino romano a esta hora es una de las imágenes más impresionantes de Europa. Dad la vuelta completa caminando — cada fachada es diferente. Los niños ya se harán una idea de la escala antes de entrar mañana.<br><br><button class="map-btn" onclick="openMap(41.8902,12.4922,'Colosseo Roma')"><span class="map-icon">📍</span>Coliseo</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARCO DE CONSTANTINO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">18:20</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🏛️</div>
+            <div><div class="card-name">Arco de Constantino</div><div class="card-subtitle">Justo al lado del Coliseo · Gratis · 2 min</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">El arco de triunfo más grande de Roma, construido en el año 315 d.C. para celebrar la victoria del emperador Constantino sobre Majencio. Lo curioso: muchos de sus relieves fueron <strong>robados de monumentos anteriores</strong> — podéis ver cómo algunas escenas no encajan con el estilo general. Los romanos ya hacían copy-paste.<br><br><button class="map-btn" onclick="openMap(41.8896,12.4905,'Arco di Costantino Roma')"><span class="map-icon">📍</span>Arco de Constantino</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONTE CELIO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">18:45</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🌳</div>
+            <div><div class="card-name">Parque del Celio</div><div class="card-subtitle">Tranquilo · Sin turistas · Los niños corren</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Subid al Monte Celio, la colina justo detrás del Coliseo. Es un parque tranquilo, arbolado, frecuentado por romanos del barrio paseando al perro. Desde aquí hay vistas bonitas al Coliseo sin las masas de turistas. Perfecto para que el niño de 6 años corra un rato después del vuelo.<br><br><button class="map-btn" onclick="openMap(41.8868,12.4930,'Parco del Celio Roma')"><span class="map-icon">📍</span>Parque del Celio</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NASONE + APERITIVO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">19:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon tip">💧</div>
+            <div><div class="card-name">Primer nasone y aperitivo</div><div class="card-subtitle">El ritual romano de la tarde</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Buscad el primer <strong>nasone</strong> (fuente pública de hierro verde con caño curvo — hay varios junto al Coliseo). Agua fresca y potable gratis, el mayor invento urbano de Roma. Rellenad las botellas.<br><br>Luego aperitivo en algún bar del barrio: un Aperol Spritz para los adultos, una limonata fresca para los niños. El aperitivo romano es entre las 19-21h y suele incluir algo de picar gratis (aceitunas, chips, crostini).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENA ZONA COLISEO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">21:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍝</div>
+            <div><div class="card-name">Cena · Zona Coliseo</div><div class="card-subtitle">Primera cena romana · Sin alejarse del apartamento</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">La zona del Coliseo tiene bastantes opciones turísticas mediocres mezcladas con algún local auténtico. Aquí van los que merece la pena:</div>
+            <div style="height:0.5rem"></div>
+
+            <div class="resto-type">🍽️ Mesa y mantel</div>
+            <div class="info-row">
+              <div class="info-label">Trattoria Luzzi</div>
+              <div class="info-val">La más antigua del barrio (desde 1945). Ambiente de tablecloth de papel, cocina romana clásica sin florituras: amatriciana, cacio e pepe, abbacchio. Muy frecuentada por locales del barrio.<br>☎️ +39 06 709 6332<br><button class="map-btn" onclick="openMap(41.8900,12.4950,'Trattoria Luzzi Roma Colosseo')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~18-22 €/pers.</span></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Ristorante Nerone</div>
+              <div class="info-val">Terraza con vistas directas al Coliseo. Más turístico pero la ubicación compensa para la primera noche. Pasta y carne romana correcta.<br>☎️ +39 06 481 7952<br><button class="map-btn" onclick="openMap(41.8912,12.4935,'Ristorante Nerone Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~22-28 €/pers.</span></div>
+            </div>
+
+            <div style="height:0.5rem"></div>
+            <div class="resto-type">🥪 Informal y rápido</div>
+            <div class="info-row">
+              <div class="info-label">Café Café</div>
+              <div class="info-val">Bar-bistró informal muy cerca del Coliseo, sin pretensiones. Buena pasta del día, ensaladas y tabla de quesos. Perfecto si llegáis tarde y los niños tienen hambre ya.<br><button class="map-btn" onclick="openMap(41.8897,12.4960,'Cafe Cafe Roma Colosseo')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~15-18 €/pers.</span></div>
+            </div>
+
+            <div style="height:0.5rem"></div>
+            <div class="resto-type">🍕 Si los niños ya no pueden más</div>
+            <div class="info-row">
+              <div class="info-label">Pizzeria Formula Uno</div>
+              <div class="info-val">Pizzería de barrio en el Esquilino (5 min del Coliseo), sin florituras, frecuentada por locales. Pizza entera para cada uno, precios muy bajos, sin esperas largas. El antídoto perfecto para los niños en el primer día de viaje.<br>☎️ +39 06 445 3866<br><button class="map-btn" onclick="openMap(41.8953,12.5018,'Pizzeria Formula Uno Roma Esquilino')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~8-12 €/pers.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GELATO PRIMERA NOCHE -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">22:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gelato">🍦</div>
+            <div><div class="card-name">Primer gelato romano</div><div class="card-subtitle">Obligatorio en la primera noche</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Cerrad el día con gelato. En la zona del Coliseo hay varias opciones — buscad las gelaterie donde el gelato <strong>no está amontonado en pirámides de colores fluorescentes</strong> (esas son industriales). El gelato artesanal está en recipientes planos con tapadera metálica. Pedid pistacho, crema di ricotta o fragola (fresa).<br><br><button class="map-btn" onclick="openMap(41.8905,12.4940,'Gelateria Colosseo Roma')"><span class="map-icon">📍</span>Zona Coliseo</button><br><span class="resto-price">💶 3-4 €/persona</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 30 MARZO — COLISEO
+     ============================================================ -->
+<section class="section" id="d30">
+  <div class="day-header" style="background:linear-gradient(135deg,#2a0808,#6b1a1a)">
+    <span class="day-emoji">🏟️</span>
+    <div class="day-label">Día 2 · Lunes 30 de marzo</div>
+    <div class="day-title">El corazón<br>del Imperio</div>
+    <div class="day-date">Coliseo 10:00h · Foro Romano · Aventino · Trastevere</div>
+  </div>
+
+  <div class="timeline">
+
+    <!-- DESAYUNO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">8:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">☕</div>
+            <div><div class="card-name">Desayuno romano</div><div class="card-subtitle">Bar de barrio cerca del hotel</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">El ritual sagrado: café espresso en barra + <strong>cornetto</strong> (croissant italiano, más blando y dulce). Si queréis algo especial, pedid un <strong>maritozzo con la panna</strong> — un bollo enorme relleno de nata montada. Los niños van a flipar.<br><br>Regla de oro: <strong>pagad siempre en barra</strong>, no en terraza (la terraza añade 30-50% al precio). Precio real: café 1€, cornetto 1-1,50€.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLISEO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">10:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🏟️</div>
+            <div><div class="card-name">Coliseo (Anfiteatro Flavio)</div><div class="card-subtitle">🎟️ Entrada reservada · ~90 min</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Construido entre el <strong>70 y el 80 d.C.</strong> por los emperadores Vespasiano y Tito. Capacidad: <strong>50.000-80.000 espectadores</strong>. El nombre real es Anfiteatro Flavio; "Coliseo" viene de la enorme estatua de Nerón (el Coloso) que había justo al lado.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Qué mirar dentro</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Hypogeum</div><div class="info-val">Los sótanos subterráneos por donde subían gladiadores y fieras mediante poleas y trampillas. Imaginad el terror al esperar ahí abajo.</div></div>
+            <div class="info-row"><div class="info-label">Arcos</div><div class="info-val">Cada arco tiene un número tallado en piedra — los romanos ya numeraban los accesos como un estadio moderno, hace 2.000 años.</div></div>
+            <div class="info-row"><div class="info-label">Nivel 3</div><div class="info-val">Subid al nivel superior para ver el conjunto y entender la escala: 188 metros de diámetro, 57 metros de alto.</div></div>
+            <div class="info-row"><div class="info-label">Para los niños</div><div class="info-val">Decidles que los gladiadores no siempre morían: muchos eran famosos como futbolistas de hoy. Y el "pulgar abajo" como señal de muerte es un mito moderno.</div></div>
+            <div class="pills">
+              <span class="pill">Hypogeum</span>
+              <span class="pill">Arcos numerados</span>
+              <span class="pill red">Pedir la app oficial</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORO ROMANO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">11:45</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🏛️</div>
+            <div><div class="card-name">Foro Romano y Monte Palatino</div><div class="card-subtitle">Mismo ticket · ~75 min</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">El corazón político y religioso de Roma durante 600 años. Aquí estaban los tribunales, los templos y la tribuna (Rostra) desde donde los políticos arengaban al pueblo. El Monte Palatino encima era el barrio noble — de ahí viene la palabra <em>palacio</em>.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>No os perdáis</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Arco de Tito</div><div class="info-val">Entrada al Foro. Conmemora la destrucción de Jerusalén en el año 70 d.C. Dentro del arco veréis esculpido el Menorá (el candelabro del Templo de Salomón) siendo transportado como botín de guerra.</div></div>
+            <div class="info-row"><div class="info-label">Bas. Majencio</div><div class="info-val">Las tres bóvedas gigantes que siguen en pie. Miguel Ángel las estudió para diseñar la cúpula de San Pedro.</div></div>
+            <div class="info-row"><div class="info-label">Casa de Livia</div><div class="info-val">En el Palatino. La casa de la esposa de Augusto, con frescos originales del siglo I a.C. La más antigua pintura romana conservada in situ.</div></div>
+            <div class="info-row"><div class="info-label">Para niños</div><div class="info-val">El Foro era el "Instagram" de la época: los políticos encargaban arcos y columnas para anunciar sus victorias públicamente. ¿Cuántos "posts de victoria" contáis?</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALMUERZO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">13:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍝</div>
+            <div><div class="card-name">Almuerzo zona Coliseo</div><div class="card-subtitle">Opciones para todos los bolsillos</div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🍽️ Mesa y mantel</div>
+            <div class="info-row"><div class="info-label">Trattoria Vecchia Roma</div><div class="info-val">Coda alla vaccinara, cacio e pepe, pasta fresca. Local de toda la vida, ambiente informal con manteles de papel.<br>☎️ +39 06 446 7143<br><button class="map-btn" onclick="openMap(41.8937,12.5024,'Trattoria Vecchia Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — niños felices</div>
+            <div class="info-row"><div class="info-label">Pizzeria Remo</div><div class="info-val">Pizzería clásica romana de toda la vida en Testaccio, muy cerca. Pizza fina y crujiente, sin complicaciones. Los niños piden lo que quieren y no hay drama. Precios muy contenidos.<br>☎️ +39 06 574 6270<br><button class="map-btn" onclick="openMap(41.8776,12.4738,'Pizzeria Remo Testaccio Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~10-15 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CIRCO MAXIMO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">15:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🐎</div>
+            <div><div class="card-name">Circo Máximo</div><div class="card-subtitle">GRATIS · Poco conocido · 15 min andando del Foro</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">La explanada verde que veis era el <strong>mayor estadio de la historia</strong>: <strong>250.000 espectadores</strong> (más que cualquier estadio moderno). Aquí corrían los carros de cuadriga durante 700 años. Augusto podía ver las carreras desde su palacio en el Palatino, justo encima. <strong>Entrada gratuita</strong>, sin turistas, los niños pueden correr libremente por la pista.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOCCA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">15:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">👄</div>
+            <div><div class="card-name">Bocca della Verità</div><div class="card-subtitle">Gratis · 5 min del Circo Máximo · Niños 😍</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Una tapa de alcantarilla romana del siglo IV convertida en leyenda: dicen que muerde la mano de los mentirosos. La iglesia de <strong>Santa Maria in Cosmedin</strong> que la alberga guarda dentro el <strong>cráneo de San Valentín</strong>, el santo de los enamorados. La arquitectura interior medieval es bellísima y muy diferente al barroco recargado del resto de Roma.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Info práctica</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Precio</div><div class="info-val">Gratuito (donativo recomendado)</div></div>
+            <div class="info-row"><div class="info-label">Horario</div><div class="info-val">9:30-18:00 todos los días</div></div>
+            <div class="info-row"><div class="info-label">Cola</div><div class="info-val">Suele haber cola corta. Si llegáis antes de las 10h o a mediodía, casi sin espera.</div></div>
+            <div class="info-row"><div class="info-label">Ubicación</div><div class="info-val"><button class="map-btn" onclick="openMap(41.8881,12.4816,'Bocca della Verità Santa Maria in Cosmedin')"><span class="map-icon">📍</span>Bocca della Verità</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVENTINO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">16:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🔑</div>
+            <div><div class="card-name">El ojo mágico del Aventino</div><div class="card-subtitle">Secreto · GRATIS · Los niños no lo olvidarán</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Subid al Aventino hasta la <strong>Piazza dei Cavalieri di Malta</strong>. Hay una puerta verde con un agujero de cerradura. Si miráis por él, veréis la <strong>cúpula de San Pedro perfectamente enmarcada</strong> al final de un pasillo de árboles recortados. Es el truco visual más sorprendente de Roma. Los niños repetirán diez veces.<br><br>Al lado está el <strong>Giardino degli Aranci</strong>: jardín de naranjos con las mejores vistas gratuitas del Tíber y los tejados de Roma.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">20:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍝</div>
+            <div><div class="card-name">Cena en Trastevere</div><div class="card-subtitle">El barrio más animado de Roma</div></div>
+          </div>
+          <div class="card-body">
+            <div class="info-row"><div class="info-label">Tonnarello</div><div class="info-val">El más popular de Trastevere. Carbonara, amatriciana, cordero al horno. Cola o reserva anticipada.<br>☎️ Reserva por web<br><button class="map-btn" onclick="openMap(41.8898,12.4693,'Tonnarello Trastevere')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-28 €/pers.</span></div></div>
+            <div class="info-row"><div class="info-label">Nannarella</div><div class="info-val">Mismo nivel, algo menos masificado. Cacio e pepe de escándalo.<br>☎️ +39 06 581 5378<br><button class="map-btn" onclick="openMap(41.8889,12.4707,'Nannarella Trastevere')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~18-25 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 31 MARZO — VATICANO
+     ============================================================ -->
+<section class="section" id="d31">
+  <div class="day-header" style="background:linear-gradient(135deg,#0a1628,#1e3a5f)">
+    <span class="day-emoji">⛪</span>
+    <div class="day-label">Día 3 · Martes 31 de marzo</div>
+    <div class="day-title">El Vaticano y<br>Castel Sant'Angelo</div>
+    <div class="day-date">🎟️ Museos Vaticanos ~14:30h</div>
+  </div>
+
+  <div class="timeline">
+
+    <!-- MAÑANA LIBRE -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">9:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🚶</div>
+            <div><div class="card-name">Mañana libre: Barrio Prati</div><div class="card-subtitle">El barrio junto al Vaticano · Relajado</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Prati es el barrio residencial elegante al lado del Vaticano. Calles anchas, tiendas locales, heladerías. Perfecto para desayunar tranquilos y dar un paseo antes de la entrada de tarde. El <strong>Mercato Trionfale</strong> (Via Andrea Doria, abierto por la mañana) es el mercado cubierto más grande de Roma, con ambiente 100% local y sin turistas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASTEL ANTES -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">10:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🏰</div>
+            <div><div class="card-name">Castel Sant'Angelo</div><div class="card-subtitle">~90 min · Comprad ticket online ~20€</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Construido como <strong>mausoleo del emperador Adriano</strong> en el año 139. Luego: fortaleza papal, cárcel (aquí murió el alquimista Cagliostro) y finalmente museo. Los papas construyeron el <strong>Passetto di Borgo</strong>, un corredor secreto elevado de 800 metros hasta el Vaticano para escapar de invasiones.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Qué ver aquí</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">La terraza</div><div class="info-val">Las mejores vistas de Roma: el Tíber, el Puente de los Ángeles de Bernini y San Pedro al fondo. Id temprano para evitar cola en el ascensor.</div></div>
+            <div class="info-row"><div class="info-label">Las celdas</div><div class="info-val">Las celdas papales son una rareza histórica — el lujo papal mezclado con la función militar. Giordano Bruno, el filósofo quemado en Campo de' Fiori, estuvo aquí.</div></div>
+            <div class="info-row"><div class="info-label">Para niños</div><div class="info-val">Es un castillo de verdad con historia de cárceles y escapes secretos. Contadles que el corredor secreto se usó por última vez en 1527 cuando Carlos V saqueó Roma.</div></div>
+            <div class="info-row"><div class="info-label">Dirección</div><div class="info-val">☎️ +39 06 681 9111<br><button class="map-btn" onclick="openMap(41.9031,12.4663,'Castel Sant Angelo Roma')"><span class="map-icon">📍</span>Ver en mapa</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALMUERZO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">12:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🥪</div>
+            <div><div class="card-name">Almuerzo zona Vaticano</div><div class="card-subtitle">Antes de la entrada a los Museos</div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🍽️ Mesa y mantel</div>
+            <div class="info-row"><div class="info-label">Tonnarello San Pietro</div><div class="info-val">Pasta fresca, ambiente animado. A 5 min de los Museos. Los niños comen pasta sin complicaciones.<br>☎️ +39 06 4544 8433<br><button class="map-btn" onclick="openMap(41.9048,12.4590,'Tonnarello San Pietro')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — rápido y concreto</div>
+            <div class="info-row"><div class="info-label">Il Sorpasso</div><div class="info-val">Bar-restaurante en Prati muy popular con locales. Buena pizza, pasta rápida, tabla de embutidos. Ambiente animado y sin pretensiones. Perfecto con niños.<br>☎️ +39 06 8902 4554<br><button class="map-btn" onclick="openMap(41.9075,12.4625,'Il Sorpasso Prati Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~12-18 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VATICANO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">14:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🎨</div>
+            <div><div class="card-name">Museos Vaticanos</div><div class="card-subtitle">🎟️ Entrada reservada · 2,5-3 horas</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Los Museos Vaticanos son en realidad una <strong>serie de colecciones</strong> acumuladas por los papas durante siglos: arte egipcio, griego, romano, renacentista y barroco. La ruta oficial lleva por 7 km de galerías.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Las salas imprescindibles</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Patio Octog.</div><div class="info-val"><strong>Laocoonte y sus hijos:</strong> el grupo escultórico griego del sacerdote devorado por serpientes. Miguel Ángel fue a verlo nada más se desenterró en 1506. Es la escultura que más le influyó en su vida. Los niños lo recordarán.</div></div>
+            <div class="info-row"><div class="info-label">Galería Mapas</div><div class="info-val">120 metros de mapas de Italia pintados en el siglo XVI con precisión asombrosa. Los mapas parecen satélite pero son de 1580. Levantad la vista al techo: el trabajo es alucinante.</div></div>
+            <div class="info-row"><div class="info-label">Estanza Rafael</div><div class="info-val"><strong>La Escuela de Atenas</strong>: Rafael pintó aquí a todos los grandes filósofos griegos con las caras de sus contemporáneos. Platón tiene la cara de Leonardo da Vinci. Buscadlo.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPILLA SIXTINA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">17:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">✨</div>
+            <div><div class="card-name">Capilla Sixtina</div><div class="card-subtitle">Al final del recorrido de los Museos</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Miguel Ángel tardó <strong>4 años</strong> en pintar el techo (1508-1512), tumbado sobre un andamio, con el cuello destruido. Era escultor y odiaba pintar: aceptó el encargo a regañadientes. El resultado son 9 escenas del Génesis, <strong>La Creación de Adán</strong> en el centro, y el <strong>Juicio Final</strong> en la pared del altar (pintado 25 años después, en 1536).</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Cómo mirar el techo</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Empezad</div><div class="info-val">Buscad primero la <strong>Creación de Adán</strong> en el centro del techo (el dedo de Dios tocando el dedo de Adán). Es la escena central y os sirve de ancla para entender el resto.</div></div>
+            <div class="info-row"><div class="info-label">Juicio Final</div><div class="info-val">La pared del altar. Cristo en el centro, los bienaventurados a la derecha (su izquierda), los condenados a la izquierda cayendo al infierno. Buscad a Dante entre los condenados.</div></div>
+            <div class="info-row"><div class="info-label">Para niños</div><div class="info-val">Preguntadles: ¿Cuántos años tardó Miguel Ángel? (4). ¿De pie o tumbado? (tumbado, mirando hacia arriba con el brazo levantado todo el día). ¿Le dolía el cuello? (muchísimo, hay una carta suya quejándose).</div></div>
+            <div class="info-row"><div class="info-label">Fotos</div><div class="info-val">Prohibidas oficialmente. Los guardias lo dicen constantemente. Todo el mundo hace fotos igual.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">20:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍷</div>
+            <div><div class="card-name">Cena zona Vaticano / Prati</div><div class="card-subtitle">Después de un día intenso</div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🍽️ Mesa y mantel</div>
+            <div class="info-row"><div class="info-label">Osteria Con Cucina</div><div class="info-val">Menú cambia cada noche. Fettuccine al sugo, cacio e pepe, pollo al horno. Local sin turistas.<br><button class="map-btn" onclick="openMap(41.8964,12.4645,'Osteria Con Cucina Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~15-20 €/pers.</span></div></div>
+            <div class="info-row"><div class="info-label">Tonnarello San Pietro</div><div class="info-val">Si no almorzasteis allí, perfecta opción de cena. Carta amplia y ambiente animado.<br>☎️ +39 06 4544 8433<br><button class="map-btn" onclick="openMap(41.9048,12.4590,'Tonnarello San Pietro')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — niños primero</div>
+            <div class="info-row"><div class="info-label">Pizzarium Bonci (zona Prati)</div><div class="info-val">El local del famoso Gabriele Bonci. Pizza al corte por peso, con ingredientes creativos. Los niños eligen su trozo y listo. Sin mesa, se come en la calle o en un banco cercano. Informal y divertido.<br>☎️ +39 06 3974 5416<br><button class="map-btn" onclick="openMap(41.9067,12.4467,'Bonci Pizzarium Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~8-12 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 1 ABRIL — JUEVES SANTO
+     ============================================================ -->
+<section class="section" id="d1">
+  <div class="day-header" style="background:linear-gradient(135deg,#0f2a12,#1e5631)">
+    <span class="day-emoji">🌸</span>
+    <div class="day-label">Día 4 · Miércoles Santo 1 de abril</div>
+    <div class="day-title">Campo de' Fiori,<br>Ghetto y Trastevere</div>
+    <div class="day-date">Mercado matutino · Cocina judeo-romana · Barrio medieval</div>
+  </div>
+
+  <div class="ss-banner" style="margin:1rem">
+    <strong>🕊️ Miércoles Santo</strong>
+    A partir de hoy la ciudad se llena de peregrinos y el ambiente cambia. Por la tarde puede haber procesiones en algunas zonas del centro. El barrio de Trastevere se mantiene tranquilo. Moved las visitas a la mañana si queréis evitar aglomeraciones.
+  </div>
+
+  <div class="timeline">
+
+    <!-- CAMPO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">9:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🌺</div>
+            <div><div class="card-name">Mercado de Campo de' Fiori</div><div class="card-subtitle">Hasta las 13-14h · Gratis · Ambiente</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Mercado al aire libre con 500 años de historia. Especias, flores, quesos y limones gigantes de Amalfi. En el centro, la <strong>estatua encapuchada y siniestra de Giordano Bruno</strong>: el filósofo que fue quemado vivo <em>aquí mismo</em> en el año 1600 por defender que el universo era infinito y había otros planetas con vida. Sus ideas son hoy física básica.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LARGO ARGENTINA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">10:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🐱</div>
+            <div><div class="card-name">Largo di Torre Argentina</div><div class="card-subtitle">Gratis · Los gatos de César · 5 min</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Cuatro templos republicanos del siglo IV-II a.C. en medio de una plaza de tráfico, ignorados por millones de turistas. En la <strong>Curia de Pompeyo</strong>, exactamente aquí, fue <strong>asesinado Julio César el 15 de marzo del 44 a.C.</strong> Hoy una colonia de gatos callejeros cuida las ruinas. En horario de 12-16h podéis bajar al nivel de los templos y ver los gatos de cerca. La escena del crimen más famosa de la historia, con gatos.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Info práctica</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Precio</div><div class="info-val">Gratis desde la calle · Visita interior guiada ~8€</div></div>
+            <div class="info-row"><div class="info-label">Gatos</div><div class="info-val">La colonia de gatos (Gato Largo Argentina) abre de 12-16h. Se puede entrar a ver y acariciar los gatos. Los niños van a flipar.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GHETTO ALMUERZO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">13:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🫒</div>
+            <div><div class="card-name">Almuerzo en el Ghetto Judío</div><div class="card-subtitle">Cocina única en el mundo</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">La cocina <strong>judeo-romana</strong> es la más antigua de Italia: mezcla la tradición sefardita con la cocina romana. Hay una comunidad judía en Roma desde el siglo II a.C. — la más antigua del mundo fuera de Israel.</div>
+            <div style="height:0.5rem"></div>
+            <div class="resto-type">🫒 La experiencia — para adultos y aventureros</div>
+            <div class="info-row"><div class="info-label">Renato al Ghetto</div><div class="info-val"><strong>Carciofi alla giudia</strong> (alcachofas fritas crujientes), fritto misto, pasta. Cocina única en el mundo.<br>☎️ +39 06 4754 5830<br><button class="map-btn" onclick="openMap(41.8930,12.4775,'Renato al Ghetto Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~25-30 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — a 3 min andando</div>
+            <div class="info-row"><div class="info-label">Forno del Ghetto (Il Forno)</div><div class="info-val">Panadería-horno histórico del Ghetto. Tortas di ricotta, pizza blanca caliente y bollería sefardita. Los niños se ponen contentos enseguida. Perfecto también para picar antes de entrar al restaurante los adultos.<br><button class="map-btn" onclick="openMap(41.8928,12.4772,'Forno del Ghetto Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~4-7 €/pers.</span></div></div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Qué pedir sí o sí</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Carciofo</div><div class="info-val">La alcachofa alla giudia es EL plato del Ghetto. Frita dos veces hasta quedar crujiente por fuera y tierna por dentro. Inventada aquí.</div></div>
+            <div class="info-row"><div class="info-label">Fritto misto</div><div class="info-val">Mezcla de verduras y bacalao fritos en tempura ligera. Nada tiene que ver con el fritto misto de otras partes.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRASTEVERE TARDE -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">15:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">⛪</div>
+            <div><div class="card-name">Santa Maria in Trastevere</div><div class="card-subtitle">La iglesia más antigua de Roma · Gratis</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Fundada en el siglo III (edificio actual del XII). Tiene los <strong>mosaicos medievales más espectaculares de Roma</strong> en el ábside: fondos dorados, la Virgen entronizada como emperatriz. La plaza delante es el corazón del barrio — sentaros en la fuente del siglo VIII y disfrutad del ambiente.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAR SAN CALISTO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">17:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🍺</div>
+            <div><div class="card-name">Bar San Calisto</div><div class="card-subtitle">El bar más auténtico de Trastevere</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Frecuentado por artistas, estudiantes y viejos del barrio desde hace décadas. Suelo de serrín, sillas de plástico, precios de barrio (café 1€, cerveza 2€). El mejor <strong>cioccolato freddo</strong> (chocolate frío) de Roma según los locales. Antídoto perfecto para los bares touristificados.<br><br><button class="map-btn" onclick="openMap(41.8891,12.4708,'Bar San Calisto Trastevere')"><span class="map-icon">📍</span>Bar San Calisto</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">20:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍝</div>
+            <div><div class="card-name">Cena en Trastevere</div><div class="card-subtitle"></div></div>
+          </div>
+          <div class="card-body">
+            <div class="info-row"><div class="info-label">Otello</div><div class="info-val">Ambiente íntimo y rústico. El tiramisu casero es legendario. Ravioli de mantequilla y salvia.<br>☎️ +39 06 589 6848<br><button class="map-btn" onclick="openMap(41.8904,12.4692,'Otello Trastevere Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 2 ABRIL — VIERNES SANTO
+     ============================================================ -->
+<section class="section" id="d2">
+  <div class="day-header" style="background:linear-gradient(135deg,#1a0a2e,#3d1460)">
+    <span class="day-emoji">🎨</span>
+    <div class="day-label">Día 5 · Jueves Santo 2 de abril</div>
+    <div class="day-title">Arte, fuentes<br>y escalinata</div>
+    <div class="day-date">Borghese · Trevi · Spagna · Procesión del Jueves Santo</div>
+  </div>
+
+  <div class="ss-banner" style="margin:1rem">
+    <strong>✝️ Jueves Santo</strong>
+    Esta noche se celebran las procesiones del Jueves Santo por el centro histórico. La más espectacular recorre desde San Juan de Letrán hasta el Coliseo. El ambiente nocturno en Roma es impresionante. Si tenéis energía, merece la pena salir a verlo.
+  </div>
+
+  <div class="timeline">
+
+    <!-- BORGHESE -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">9:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🏛️</div>
+            <div><div class="card-name">Galleria Borghese</div><div class="card-subtitle">🎟️ Reserva imprescindible · 2 horas exactas</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">El cardenal Borghese encargó a <strong>Bernini cuatro esculturas</strong> cuando el artista tenía entre 20 y 25 años. El resultado es el museo de escultura más impresionante del mundo. Solo 360 personas a la vez, en turnos de 2 horas — íntimo y sin agobios.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Las 4 esculturas de Bernini</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">Apolo y Dafne</div><div class="info-val">La ninfa Dafne se convierte en árbol para escapar de Apolo. Bernini captura el instante exacto de la transformación: los dedos convirtiéndose en ramas, las raíces brotando de los pies. En mármol. Alucinante.</div></div>
+            <div class="info-row"><div class="info-label">El Rapto</div><div class="info-val">Plutón raptando a Proserpina. El pulgar del dios hundiéndose en el muslo de la diosa parece carne blanda, no piedra. Bernini tenía 23 años cuando la hizo.</div></div>
+            <div class="info-row"><div class="info-label">David</div><div class="info-val">Bernini se miró en un espejo durante meses para capturar su propia cara de concentración en el momento previo a lanzar la piedra. Es el único retrato de Bernini.</div></div>
+            <div class="info-row"><div class="info-label">Los Caravaggio</div><div class="info-val">En la planta superior: 6 cuadros de Caravaggio. El más impactante: la Madona dei Palafrenieri (la Virgen aplastando la serpiente con su hijo). Jesús y la Virgen con caras de gente de la calle, no de santos.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PINCIO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">11:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🌄</div>
+            <div><div class="card-name">Terrazas del Pincio → Piazza del Popolo</div><div class="card-subtitle">Bajada a pie · Gratis · Vistas panorámicas</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Desde la Borghese, bajad caminando por los jardines de Villa Borghese hasta las <strong>terrazas del Pincio</strong>: panorámica de Piazza del Popolo, el Tíber y los tejados de Roma. Bajad las escaleras hasta la plaza: el <strong>obelisco de Ramses II</strong> aquí tiene 3.200 años, traído de Heliópolis en el siglo I a.C. En la esquina, <strong>Santa Maria del Popolo</strong> tiene dos Caravaggio auténticos gratis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALMUERZO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">13:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍽️</div>
+            <div><div class="card-name">Almuerzo zona Trevi / centro</div><div class="card-subtitle"></div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🍽️ Mesa y mantel</div>
+            <div class="info-row"><div class="info-label">Tratt. Della Stampa</div><div class="info-val">5 min de la Fontana di Trevi. Carbonara y cacio e pepe de los mejores del centro. Reservad.<br>☎️ +39 06 8901 8741<br><button class="map-btn" onclick="openMap(41.9022,12.4848,'Trattoria Della Stampa Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — niños contentos</div>
+            <div class="info-row"><div class="info-label">Forno Roscioli</div><div class="info-val">El mejor horno de pan de Roma. Pizza blanca caliente, focaccia con ingredientes frescos, bocadillos preparados al momento. Sin esperas, sin carta — señaláis lo que queréis. Los niños eligen su trozo de pizza y listo. Muy cerca de Campo de' Fiori.<br>☎️ +39 06 686 4045<br><button class="map-btn" onclick="openMap(41.8955,12.4718,'Forno Roscioli Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~6-10 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TREVI -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">14:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">⛲</div>
+            <div><div class="card-name">Fontana di Trevi</div><div class="card-subtitle">~2-3€ zona delantera · Mejor de tarde</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Diseñada en 1762 sobre el punto final del <strong>Aqua Virgo</strong>, el acueducto romano que llevaeste agua a Roma desde el año 19 a.C. La leyenda de la moneda (una moneda = volver a Roma; dos = encontrar el amor) viene de la película <em>Tres monedas en la fuente</em> (1954).</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Consejo con niños</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">La moneda</div><div class="info-val">Que pidan un deseo antes de tirarla con la mano derecha por encima del hombro izquierdo. El ritual es serio (o eso dicen).</div></div>
+            <div class="info-row"><div class="info-label">Madrugada</div><div class="info-val">Si podéis volver a las 6-7h de la mañana otro día, la experiencia es completamente diferente: 4-5 personas y silencio absoluto.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESCALINATA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">15:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🪜</div>
+            <div><div class="card-name">Escalinata de la Trinità dei Monti</div><div class="card-subtitle">Piazza di Spagna · 135 escalones · Gratis</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Construida en 1725 con dinero francés (de ahí que se llame "española" — ironía histórica). Conecta la plaza con la iglesia francesa de la Trinità dei Monti. <strong>Prohibido sentarse en los escalones</strong> (multa de hasta 450€). Subid hasta arriba para la vista del eje Flaminio. La <strong>Barcaccia</strong>, la fuente en forma de barca hundida al pie, fue diseñada por el padre de Bernini.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GELATO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">16:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gelato">🍦</div>
+            <div><div class="card-name">Come il Latte</div><div class="card-subtitle">El gelato más elegante de Roma · 5 min de Trevi</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Lo sirven con nata fresca montada y chocolate fundido. Pedid pistacho y stracciatella. Los niños van a flipar.<br><button class="map-btn" onclick="openMap(41.9071,12.4961,'Come il Latte gelateria Roma')"><span class="map-icon">📍</span>Come il Latte</button><br>☎️ +39 06 4290 3882 · <span class="resto-price">💶 4-6 €/persona</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIA CRUCIS moved to day 3 (Viernes Santo 3 abril) -->
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 3 ABRIL — VIERNES SANTO
+     ============================================================ -->
+<section class="section" id="d3">
+  <div class="day-header" style="background:linear-gradient(135deg,#0a1a2a,#1a3a5a)">
+    <span class="day-emoji">⚰️</span>
+    <div class="day-label">Día 6 · Viernes Santo 3 de abril</div>
+    <div class="day-title">Via Appia,<br>Catacumbas y Vía Crucis</div>
+    <div class="day-date">Testaccio · Via Appia · Subterráneo · Vía Crucis nocturno en el Coliseo</div>
+  </div>
+
+  <div class="timeline">
+
+    <!-- TESTACCIO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">9:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon secret">🧀</div>
+            <div><div class="card-name">Mercato di Testaccio</div><div class="card-subtitle">El mercado más auténtico de Roma · Gratis</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Testaccio es el barrio más obrero y gastronómico de Roma. Su mercado es el opuesto al turistificado Campo de' Fiori: aquí compra la gente del barrio. Porchetta caliente, quesos DOP, pasta fresca, vino a granel. <strong>Monte Testaccio</strong> al lado: una colina entera formada por millones de ánforas romanas rotas de aceite (siglos I-III). Sí, una colina artificial de cerámica.</div>
+            <div class="pills">
+              <span class="pill green">Lun-Sáb · 7-15:30h</span>
+              <span class="pill">Gratis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIA APPIA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">11:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon tip">🚌</div>
+            <div><div class="card-name">Desplazamiento a la Via Appia</div><div class="card-subtitle">Bus 118 o taxi desde Testaccio</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">La <strong>Via Appia Antica</strong> es la carretera romana más importante del mundo: construida en el año 312 a.C., llegaba hasta Brindisi (700 km). "La reina de las vías" según Estacio. Tomad el bus 118 desde Piazzale Ostiense o un taxi (~15-20€). El ambiente de la Via Appia en fin de semana es especial: cipreses, pinos piñoneros, lápidas romanas y turistas en bicicleta.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAN CALIXTO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">14:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">⛏️</div>
+            <div><div class="card-name">Catacumbas de San Calixto</div><div class="card-subtitle">~10€ · Tour guiado 45-60 min · Cerrado miércoles</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Las más grandes de Roma: <strong>20 km de galerías</strong>, 4 niveles, medio millón de enterramientos. Los primeros cristianos excavaron en la blanda roca volcánica (tufo) para enterrar a sus muertos fuera de la ciudad. La <strong>Cripta de los Papas</strong> guarda 16 pontífices de los siglos III-IV. Temperatura constante de 15°C.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Qué esperar dentro</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">El tour</div><div class="info-val">Guiado obligatorio. En español disponible. Bajáis hasta 15 metros bajo tierra. Los nichos donde estaban los cuerpos se ven a los lados de los túneles (los restos fueron trasladados a iglesias en el siglo IX).</div></div>
+            <div class="info-row"><div class="info-label">Para niños</div><div class="info-val">El ambiente subterráneo es intenso pero no de terror. El guía explica muy bien. Los niños de 6+ suelen disfrutarlo más que los adultos. Llevad algo de abrigo (15°C hace fresco).</div></div>
+            <div class="info-row"><div class="info-label">Precio niños</div><div class="info-val">Menores de 7 años: GRATIS. Mayores de 7: precio reducido.</div></div>
+            <div class="info-row"><div class="info-label">Dirección</div><div class="info-val">☎️ +39 06 513 0151<br><button class="map-btn" onclick="openMap(41.8589,12.5107,'Catacombe di San Callisto Via Appia')"><span class="map-icon">📍</span>Catacumbas San Calixto</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAN SEBASTIAN -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">15:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">⛪</div>
+            <div><div class="card-name">Catacumbas de San Sebastián</div><div class="card-subtitle">~8€ · 5 min de San Calixto</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Aquí se escondieron los cuerpos de <strong>San Pedro y San Pablo</strong> durante la persecución del emperador Valeriano (siglo III). La basílica que las cubre tiene una flecha del martirio original de San Sebastián. Combinadlas con San Calixto para completar la experiencia.<br><br>☎️ +39 06 785 0350<br><button class="map-btn" onclick="openMap(41.8559,12.5158,'Catacombe San Sebastiano Via Appia')"><span class="map-icon">📍</span>Catacumbas San Sebastián</button><br><span class="pill red">Cerrado lunes</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALMUERZO PICNIC -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">12:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🧺</div>
+            <div><div class="card-name">Almuerzo en la Via Appia</div><div class="card-subtitle">Dos opciones concretas</div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🧺 Plan A — picnic con lo del mercado</div>
+            <div class="info-row"><div class="info-label">Picnic Via Appia</div><div class="info-val">Si habéis pasado por el Mercato di Testaccio por la mañana, comprad porchetta (cerdo asado al espeto, el bocadillo favorito de Roma), pan, fruta y algo de queso. Hay mesas de piedra junto a las ruinas y zonas de hierba donde los niños pueden moverse. El bocadillo de porchetta es 100% familiar — una especie de bocadillo de lechón pero mejor.<br><span class="resto-price">💶 ~5-8 €/pers. total</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍽️ Plan B — restaurante concreto en la zona</div>
+            <div class="info-row"><div class="info-label">Ristorante Cecilia Metella</div><div class="info-val">Restaurante familiar justo en la Via Appia, enfrente del mausoleo romano. Carta sencilla con pasta, pizza y carnes a la brasa. Terraza al aire libre. Perfecto para comer sentados con los niños sin desplazarse.<br>☎️ +39 06 513 6743<br><button class="map-btn" onclick="openMap(41.8571,12.5118,'Ristorante Cecilia Metella Via Appia')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~15-20 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">20:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍝</div>
+            <div><div class="card-name">Cena en Trastevere</div><div class="card-subtitle">Antes del Vía Crucis</div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🍝 Mesa y mantel — cenad pronto</div>
+            <div class="info-row"><div class="info-label">Otello</div><div class="info-val">Tiramisu legendario, ravioli de mantequilla y salvia. Ambiente íntimo. Cenad sobre las 20h para tener tiempo para el Vía Crucis.<br>☎️ +39 06 589 6848<br><button class="map-btn" onclick="openMap(41.8904,12.4692,'Otello Trastevere Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — más rápido</div>
+            <div class="info-row"><div class="info-label">Da Enzo al 29</div><div class="info-val">Trattoria clásica de Trastevere, pequeña y sin pretensiones. Pasta del día, carne a la plancha y tiramisú casero. Los niños comen bien aquí. Reservad con antelación, tiene pocas mesas.<br>☎️ +39 06 581 2260<br><button class="map-btn" onclick="openMap(41.8886,12.4699,'Da Enzo al 29 Trastevere Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~18-22 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VÍA CRUCIS VIERNES SANTO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">21:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">✝️</div>
+            <div><div class="card-name">Vía Crucis del Coliseo</div><div class="card-subtitle">Viernes Santo · Presidido por el Papa · Gratis</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">El recorrido de las 14 estaciones se hace alrededor del Coliseo iluminado con antorchas. Asisten decenas de miles de personas. El Papa preside desde el Palatino. Espectáculo único que se celebra desde el siglo XVII.<br><br>Llegad antes de las <strong>20:30h</strong> para encontrar sitio con los niños. Llevad algo de abrigo, la noche refresca.<br><br><button class="map-btn" onclick="openMap(41.8902,12.4922,'Colosseo Roma')"><span class="map-icon">📍</span>Coliseo · Punto de reunión</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 4 ABRIL — SÁBADO SANTO
+     ============================================================ -->
+<section class="section" id="d4">
+  <div class="day-header" style="background:linear-gradient(135deg,#3a1a08,#8b5520)">
+    <span class="day-emoji">🌅</span>
+    <div class="day-label">Día 7 · Sábado Santo 4 de abril</div>
+    <div class="day-title">Panteón, Piazza<br>Navona y despedida</div>
+    <div class="day-date">Último día completo · Tarde libre · Cena de cierre</div>
+  </div>
+
+  <div class="ss-banner" style="margin:1rem">
+    <strong>🕯️ Sábado Santo</strong>
+    El Sábado Santo en Roma tiene un ambiente especial: silencioso por la mañana, festivo por la tarde. Esta noche es la Vigilia Pascual en todas las iglesias. Si queréis vivir algo único, la misa de medianoche en cualquier basílica romana es un espectáculo de velas y canto gregoriano.
+  </div>
+
+  <div class="timeline">
+
+    <!-- PANTEON TEMPRANO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">9:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">⛩️</div>
+            <div><div class="card-name">Panteón</div><div class="card-subtitle">~5€ · Ticket online · 9-19h</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">El edificio <strong>mejor conservado de la antigüedad</strong>, construido entre el 118 y el 125 d.C. por el emperador Adriano. La cúpula de 43 metros de diámetro fue la mayor del mundo durante 1.300 años, hasta que Miguel Ángel superó su récord en Florencia. El <strong>oculus</strong> (el ojo abierto en la cima, de 8,7 metros de diámetro) es la única fuente de luz natural: cuando llueve, el agua cae dentro y sale por las pequeñas perforaciones del suelo de mármol.</div>
+          </div>
+          <button class="expand-toggle" onclick="toggle(this)">
+            <span>Los secretos del Panteón</span><span class="arr">▼</span>
+          </button>
+          <div class="expand-body">
+            <div class="info-row"><div class="info-label">La cúpula</div><div class="info-val">El hormigón romano del interior es más ligero en la parte alta: Adriano mezcló piedra pómez en lugar de grava. El efímero círculo de luz que entra por el oculus se mueve por el suelo como un reloj solar. A las 12:00h del 21 de abril (aniversario de Roma), la luz ilumina exactamente la puerta de entrada.</div></div>
+            <div class="info-row"><div class="info-label">Las tumbas</div><div class="info-val">Aquí está enterrado Rafael (murió a los 37 años). También el rey Víctor Manuel II. Rafael pidió que le enterrasen aquí.</div></div>
+            <div class="info-row"><div class="info-label">Para niños</div><div class="info-val">Cuando llueva, el agua cae por el agujero. ¿Por dónde se va? Por los desagües del suelo, igual que hace 1.900 años.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIAZZA NAVONA -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">10:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon cultura">🎭</div>
+            <div><div class="card-name">Piazza Navona</div><div class="card-subtitle">3 min del Panteón · Gratis</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Construida sobre el <strong>estadio del emperador Domiciano</strong> (siglo I d.C.) — la forma alargada de la plaza sigue exactamente el perímetro de la pista de atletismo. La fuente central, la <strong>Fontana dei Quattro Fiumi</strong> de Bernini (1651), representa los 4 grandes ríos del mundo conocido: el Nilo (con la cara tapada, porque no se sabía dónde nacía), el Ganges, el Danubio y el Río de la Plata.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALMUERZO -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">12:30</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon comida">🍽️</div>
+            <div><div class="card-name">Almuerzo final en Roma</div><div class="card-subtitle">Zona Panteón · Dos opciones</div></div>
+          </div>
+          <div class="card-body">
+            <div class="resto-type">🍝 La pasta más famosa de Roma</div>
+            <div class="info-row"><div class="info-label">Osteria da Fortunata</div><div class="info-val">Pasta fresca amasada a mano en el escaparate. La carbonara que la gente describe como la mejor de su vida. Ambiente alegre y carta sencilla que los niños entienden bien.<br>☎️ +39 06 6066 7391<br><button class="map-btn" onclick="openMap(41.8961,12.4717,'Osteria da Fortunata Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
+            <div style="height:0.7rem"></div>
+            <div class="resto-type">🍕 Alternativa familiar — a 2 min del Panteón</div>
+            <div class="info-row"><div class="info-label">Pizzeria da Baffetto</div><div class="info-val">La pizzería más famosa del centro histórico desde 1960. Pizza fina al horno de leña, ambiente de taberna sin pretensiones. Los niños piden su pizza entera y se quedan tranquilos. Cola habitual pero avanza rápido.<br>☎️ +39 06 686 1617<br><button class="map-btn" onclick="openMap(41.8977,12.4716,'Pizzeria da Baffetto Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~12-16 €/pers.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARDE LIBRE -->
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-time">15:00</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon tip">🛍️</div>
+            <div><div class="card-name">Tarde libre · Compras y gelato final</div><div class="card-subtitle"></div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Último día activo. Compras de souvenirs, paseo por el centro, gelato de despedida en <strong>Frigidarium</strong> o <strong>Giolitti</strong>.<br><br>
+            <button class="map-btn" onclick="openMap(41.8982,12.4705,'Frigidarium gelateria Roma')"><span class="map-icon">📍</span>Frigidarium</button>&nbsp;
+            <button class="map-btn" onclick="openMap(41.9010,12.4772,'Giolitti gelateria Roma')"><span class="map-icon">📍</span>Giolitti</button><br><br>Por la noche, cena tranquila cerca del hotel.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     DÍA 5 ABRIL — VUELTA A CASA
+     ============================================================ -->
+<section class="section" id="d5">
+  <div class="day-header" style="background:linear-gradient(135deg,#0a1a0a,#1a3a1a)">
+    <span class="day-emoji">🛫</span>
+    <div class="day-label">Día 8 · Domingo de Resurrección 5 de abril</div>
+    <div class="day-title">Vuelta a casa</div>
+    <div class="day-date">✈️ Información de vuelo pendiente</div>
+  </div>
+
+  <div class="page-pad" style="padding-top:1.5rem;padding-bottom:3rem">
+
+    <div class="alert info">
+      <span class="alert-icon">✈️</span>
+      <span>Pendiente de añadir la información del vuelo. Fran enviará los detalles más adelante.</span>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-header">
+        <div class="card-icon tip">⏰</div>
+        <div><div class="card-name">Vuelo de regreso</div><div class="card-subtitle">Información pendiente</div></div>
+      </div>
+      <div class="card-body">
+        <div class="info-row"><div class="info-label">Aeropuerto</div><div class="info-val">— por confirmar —</div></div>
+        <div class="info-row"><div class="info-label">Hora vuelo</div><div class="info-val">— por confirmar —</div></div>
+        <div class="info-row"><div class="info-label">Salida apt.</div><div class="info-val">— por confirmar —</div></div>
+        <div class="info-row"><div class="info-label">Traslado</div><div class="info-val">— por confirmar —</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-header">
+        <div class="card-icon tip">💡</div>
+        <div><div class="card-name">Cómo llegar al aeropuerto</div><div class="card-subtitle">Roma tiene dos aeropuertos</div></div>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <div class="info-label">Fiumicino (FCO)</div>
+          <div class="info-val">
+            El más grande. Opciones desde el centro:<br>
+            • <strong>Leonardo Express</strong> — tren directo Termini↔Fiumicino en 32 min. Sale cada 15-30 min. ~14€/persona. El más cómodo con maletas.<br>
+            • <strong>Bus</strong> (Terravision, SIT Bus) — desde Termini, ~1h, ~6-8€.<br>
+            • <strong>Taxi</strong> — tarifa fija oficial desde el centro: 50€ (aeropuerto Fiumicino). Acordad precio antes.<br>
+            <button class="map-btn" onclick="openMap(41.8003,12.2389,'Aeroporto Fiumicino Roma FCO')"><span class="map-icon">📍</span>Aeropuerto Fiumicino</button>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Ciampino (CIA)</div>
+          <div class="info-val">
+            El pequeño (Ryanair, Wizz Air). Desde el centro:<br>
+            • <strong>Bus</strong> (SIT Bus, Terravision) — desde Termini, ~40 min, ~5-7€.<br>
+            • <strong>Taxi</strong> — tarifa fija oficial: 31€ desde el centro.<br>
+            <button class="map-btn" onclick="openMap(41.7994,12.5949,'Aeroporto Ciampino Roma CIA')"><span class="map-icon">📍</span>Aeropuerto Ciampino</button>
+          </div>
+        </div>
+        <div class="alert warn" style="margin-top:0.8rem">
+          <span class="alert-icon">⚠️</span>
+          <span><strong>Domingo de Resurrección:</strong> Es el día de más tráfico del año en Roma. Salid con al menos 1 hora extra de margen. El Leonardo Express es la opción más fiable.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-header">
+        <div class="card-icon comida">☕</div>
+        <div><div class="card-name">Último desayuno romano</div><div class="card-subtitle">Si tenéis tiempo antes de salir</div></div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">Si el vuelo lo permite, el último desayuno merece la pena hacerlo en un bar de barrio: caffè + cornetto + maritozzo. El ritual que os habréis aprendido esta semana. Un último "buongiorno" a Roma antes de volver.</div>
+      </div>
+    </div>
+
+    <div class="frase">"Arriverderci, Roma."<span>— Hasta la próxima vez 🇮🇹</span></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRANSPORTE
+     ============================================================ -->
+<section class="section" id="transport">
+  <div class="transport-hero">
+    <h2>Moverse<br>por Roma</h2>
+    <p>Metro, autobús, tranvía y taxi. Todo lo que necesitáis para 5 días de turismo con niños.</p>
+  </div>
+
+  <div class="page-pad" style="padding-top:1.2rem">
+
+    <div class="alert warn">
+      <span class="alert-icon">⚠️</span>
+      <span><strong>Semana Santa:</strong> Habrá cortes de tráfico y calles cerradas varios días. El metro y los autobuses serán más lentos. Calculad tiempo extra para cada desplazamiento.</span>
+    </div>
+
+    <div class="sec-title">🎫 Títulos de transporte</div>
+    <div class="sec-divider"></div>
+
+    <div class="ticket-card">
+      <div class="ticket-badge">RECOMENDADO</div>
+      <div class="ticket-name">Tarjeta Semanal (CIS)</div>
+      <div class="ticket-price">24 €</div>
+      <div class="ticket-desc">Viajes ilimitados durante 7 días en metro, autobús, tranvía y tren urbano. La opción más cómoda para 5 días activos de visitas. Una tarjeta por persona (los del grupo no pueden compartir).</div>
+    </div>
+
+    <div class="ticket-card">
+      <div class="ticket-badge">ECONÓMICO</div>
+      <div class="ticket-name">Bono 10 viajes</div>
+      <div class="ticket-price">~15 €</div>
+      <div class="ticket-desc">Cada persona usa un viaje independientemente. Se puede compartir físicamente (pasas la tarjeta). Ideal si no hacéis muchos trayectos en transporte.</div>
+    </div>
+
+    <div class="ticket-card">
+      <div class="ticket-name">Billete sencillo (BIT)</div>
+      <div class="ticket-price">1,50 €</div>
+      <div class="ticket-desc">Válido 100 minutos en todos los medios. Una sola vez en metro. Para días puntuales con pocos desplazamientos.</div>
+    </div>
+
+    <div class="ticket-card" style="border-color:rgba(127,255,127,0.3)">
+      <div class="ticket-badge" style="color:#7dce82;border-color:rgba(127,255,127,0.3)">GRATIS</div>
+      <div class="ticket-name" style="color:#7dce82">Niños menores de 10 años</div>
+      <div class="ticket-price" style="color:#7dce82">0 €</div>
+      <div class="ticket-desc">Los menores de 10 años viajan completamente gratis en metro, autobús y tranvía. No necesitan billete.</div>
+    </div>
+
+    <div class="sec-title">📍 Dónde comprar</div>
+    <div class="sec-divider"></div>
+
+    <div class="page-pad">
+      <div class="tip-item">
+        <div class="tip-num">T</div>
+        <div class="tip-text"><strong>Tabaccherie (tabaquistas):</strong> Se identifican por el letrero con una "T" blanca sobre fondo negro. Hay uno en casi cada esquina. Aceptan efectivo y tarjeta. La opción más rápida.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">🚇</div>
+        <div class="tip-text"><strong>Máquinas de las estaciones de metro:</strong> Aceptan tarjeta y efectivo. Las instrucciones están en español.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">📱</div>
+        <div class="tip-text"><strong>App ATAC Roma:</strong> Podéis comprar el billete en el móvil y mostrarlo directamente. Evita buscar efectivo.</div>
+      </div>
+    </div>
+
+    <div class="alert warn" style="margin-top:0.5rem">
+      <span class="alert-icon">🚨</span>
+      <span><strong>VALIDAR SIEMPRE:</strong> Máquina amarilla/naranja al entrar. Sin validar = multa de 100€ aunque tengáis el billete comprado. Los revisores en Semana Santa son más frecuentes.</span>
+    </div>
+
+    <div class="sec-title">🚇 Las líneas más útiles</div>
+    <div class="sec-divider"></div>
+
+    <div class="page-pad">
+      <div class="card" style="margin-bottom:0.8rem">
+        <div class="card-body">
+          <div class="info-row"><div class="info-label">Metro A 🟠</div><div class="info-val">Ottaviano (Vaticano) ↔ Spagna ↔ Barberini ↔ Repubblica. La línea más útil para turistas.</div></div>
+          <div class="info-row"><div class="info-label">Bus H</div><div class="info-val">Testaccio ↔ centro histórico. Frecuente y directo.</div></div>
+          <div class="info-row"><div class="info-label">Bus 23</div><div class="info-val">Trastevere ↔ Vaticano por el Tíber. Muy cómodo.</div></div>
+          <div class="info-row"><div class="info-label">Bus 40/64</div><div class="info-val">Termini ↔ Vaticano. El más directo desde la zona central.</div></div>
+          <div class="info-row"><div class="info-label">Tranvía 8</div><div class="info-val">Trastevere ↔ centro histórico (Largo Argentina). Perfecto para el barrio.</div></div>
+          <div class="info-row"><div class="info-label">Bus 118/218</div><div class="info-val">Al Coliseo y la Via Appia. Para el día de las catacumbas.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">🚕 Taxis y apps</div>
+    <div class="sec-divider"></div>
+    <div class="page-pad pb3">
+      <div class="tip-item">
+        <div class="tip-num">1</div>
+        <div class="tip-text"><strong>IT Taxi</strong> — la app oficial de taxis romanos. Taxis blancos con taxímetro. Pedid siempre que pongan el taxímetro antes de arrancar.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">2</div>
+        <div class="tip-text"><strong>Uber Black</strong> — disponible en Roma pero más caro que el taxi normal. No hay UberX en Italia.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">3</div>
+        <div class="tip-text"><strong>Para la Via Appia:</strong> Taxi de ida + vuelta ~30-40€ en total. Vale la pena por comodidad con niños.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GASTRONOMÍA
+     ============================================================ -->
+<section class="section" id="gastro">
+  <div class="gastro-hero">
+    <h2>La mesa<br>romana</h2>
+    <p>Los 5 platos imprescindibles, dónde comer, cómo desayunar y el street food que no podéis perderos.</p>
+  </div>
+
+  <div class="page-pad" style="padding-top:1.2rem">
+
+    <div class="sec-title">🍝 Los 5 platos romanos</div>
+    <div class="sec-divider"></div>
+
+    <div class="pasta-card">
+      <div class="pasta-name">Carbonara</div>
+      <div class="pasta-rule">✅ Guanciale · Yema de huevo · Pecorino · Pimienta — SIN NATA</div>
+      <div class="pasta-desc">El rey de la pasta romana. Si tiene nata, no es carbonara romana, es una versión inventada fuera de Roma. El guanciale es papada de cerdo curada, no panceta.</div>
+    </div>
+
+    <div class="pasta-card">
+      <div class="pasta-name">Cacio e Pepe</div>
+      <div class="pasta-rule">✅ Solo queso Pecorino, pimienta negra y pasta</div>
+      <div class="pasta-desc">Solo 3 ingredientes. La dificultad está en emulsionar el queso sin que se apelmace. Parece sencillo, es difícil de hacer bien.</div>
+    </div>
+
+    <div class="pasta-card">
+      <div class="pasta-name">Amatriciana</div>
+      <div class="pasta-rule">✅ Guanciale + tomate San Marzano + Pecorino</div>
+      <div class="pasta-desc">Viene del pueblo de Amatrice (destruido por terremoto en 2016). Potente y sabrosa. La versión blanca sin tomate se llama Gricia y es la más antigua.</div>
+    </div>
+
+    <div class="pasta-card">
+      <div class="pasta-name">Coda alla Vaccinara</div>
+      <div class="pasta-rule">✅ Rabo de toro · Tomate · Apio · Piñones · Pasas</div>
+      <div class="pasta-desc">El plato más contundente de Roma. Guisado durante horas. La mezcla dulce-salada (pasas y piñones) es característicamente romana. Solo en trattorias serias.</div>
+    </div>
+
+    <div class="pasta-card">
+      <div class="pasta-name">Carciofo alla Giudia</div>
+      <div class="pasta-rule">✅ Alcachofa entera · Frita dos veces · Crujiente</div>
+      <div class="pasta-desc">El plato del Ghetto Judío. Se fríe entero hasta quedar como chips. Inventado aquí hace 500 años. Solo en el Ghetto o en trattorias romanas auténticas.</div>
+    </div>
+
+    <div class="sec-title">🥪 Street food imprescindible</div>
+    <div class="sec-divider"></div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="info-row"><div class="info-label">Suppli</div><div class="info-val">Bola de arroz frita con ragú de carne y mozzarella. Se come en mano. ~2-3€. EL street food romano. Supplì Roma (Via S. Francesco a Ripa, 137).</div></div>
+        <div class="info-row"><div class="info-label">Pizza al taglio</div><div class="info-val">Pizza rectangular por peso. Señaláis el trozo, lo pesan, pagáis. 3-5€ por ración generosa. Buscad locales con "pizza al taglio" en el letrero.</div></div>
+        <div class="info-label" style="padding:0.5rem 0 0.2rem;display:block">Mortadella e mozzarella</div>
+        <div class="info-row" style="border:none"><div class="info-label"></div><div class="info-val">El panino romano clásico. Mortadela italiana (con pistacho) + burrata o mozzarella. 5-6€. Pedidlo en cualquier bar diciendo: "Un panino con mortadella e mozzarella".</div></div>
+        <div class="info-row"><div class="info-label">Maritozzo</div><div class="info-val">Bollo de brioche relleno de nata montada. El desayuno romano clásico. 2-3€. Para los niños es obligatorio.</div></div>
+      </div>
+    </div>
+
+    <div class="sec-title">☕ Cómo desayunar como romano</div>
+    <div class="sec-divider"></div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="card-desc">El ritual: <strong>pagáis en caja</strong> → lleváis el ticket al mostrador → pedís. De pie en barra, sin sentaros en terraza si queréis precio de local (la terraza añade 30-50%).<br><br>El café romano es más amargo y concentrado que el español. Si querréis algo más suave, pedid un <strong>caffè americano</strong> o un <strong>cappuccino</strong> (solo por la mañana — los romanos no piden cappuccino después de las 11h, es una cosa de turistas).</div>
+      </div>
+    </div>
+
+    <div class="sec-title">🍦 Los mejores gelatos</div>
+    <div class="sec-divider"></div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="info-row"><div class="info-label">Come il Latte</div><div class="info-val">Nata fresca montada + chocolate fundido. El más elegante. ~4-6€.<br><button class="map-btn" onclick="openMap(41.9071,12.4961,'Come il Latte gelateria Roma')"><span class="map-icon">📍</span>Ver en mapa</button></div></div>
+        <div class="info-row"><div class="info-label">Frigidarium</div><div class="info-val">Gelato bañado en chocolate negro. Sin asientos, se come paseando. ~3-4€.<br><button class="map-btn" onclick="openMap(41.8982,12.4705,'Frigidarium gelateria Roma')"><span class="map-icon">📍</span>Ver en mapa</button></div></div>
+        <div class="info-row"><div class="info-label">Giolitti</div><div class="info-val">Más de 100 años de historia. El clásico intemporal. ~3-4€.<br><button class="map-btn" onclick="openMap(41.9010,12.4772,'Giolitti gelateria Roma')"><span class="map-icon">📍</span>Ver en mapa</button></div></div>
+      </div>
+    </div>
+
+    <div class="sec-title">🍽️ Todos los restaurantes</div>
+    <div class="sec-divider"></div>
+
+    <div class="card pb3">
+      <div class="card-body">
+        <div class="info-row"><div class="info-label">Tonnarello</div><div class="info-val">Trastevere. El más famoso. Carbonara y amatriciana. ☎️ Reserva por web<br><button class="map-btn" onclick="openMap(41.8898,12.4693,'Tonnarello Trastevere')"><span class="map-icon">📍</span>Ver en mapa</button> ~20-28€.</div></div>
+        <div class="info-row"><div class="info-label">Nannarella</div><div class="info-val">Trastevere. Cacio e pepe de escándalo. ☎️ +39 06 581 5378<br><button class="map-btn" onclick="openMap(41.8889,12.4707,'Nannarella Trastevere')"><span class="map-icon">📍</span>Ver en mapa</button> ~18-25€.</div></div>
+        <div class="info-row"><div class="info-label">Otello</div><div class="info-val">Trastevere. Tiramisu legendario. ☎️ +39 06 589 6848<br><button class="map-btn" onclick="openMap(41.8904,12.4692,'Otello Trastevere Roma')"><span class="map-icon">📍</span>Ver en mapa</button> ~20-25€.</div></div>
+        <div class="info-row"><div class="info-label">Tonnarello SPietro</div><div class="info-val">Zona Vaticano. Suppli + pasta fresca. ☎️ +39 06 4544 8433<br><button class="map-btn" onclick="openMap(41.9048,12.4590,'Tonnarello San Pietro')"><span class="map-icon">📍</span>Ver en mapa</button> ~20-25€.</div></div>
+        <div class="info-row"><div class="info-label">Osteria da Fortunata</div><div class="info-val">Centro. La carbonara "mejor del mundo". ☎️ +39 06 6066 7391<br><button class="map-btn" onclick="openMap(41.8961,12.4717,'Osteria da Fortunata Roma')"><span class="map-icon">📍</span>Ver en mapa</button> ~20-25€.</div></div>
+        <div class="info-row"><div class="info-label">Renato al Ghetto</div><div class="info-val">Ghetto Judío. Carciofi alla giudia. ☎️ +39 06 4754 5830<br><button class="map-btn" onclick="openMap(41.8930,12.4775,'Renato al Ghetto Roma')"><span class="map-icon">📍</span>Ver en mapa</button> ~25-30€.</div></div>
+        <div class="info-row"><div class="info-label">Tratt. Vecchia Roma</div><div class="info-val">Zona Coliseo. Local auténtico. ☎️ +39 06 446 7143<br><button class="map-btn" onclick="openMap(41.8937,12.5024,'Trattoria Vecchia Roma')"><span class="map-icon">📍</span>Ver en mapa</button> ~20-25€.</div></div>
+        <div class="info-row"><div class="info-label">Tratt. Luzzi</div><div class="info-val">Zona Coliseo. La más antigua del barrio (1945). ☎️ +39 06 709 6332<br><button class="map-btn" onclick="openMap(41.8900,12.4950,'Trattoria Luzzi Roma')"><span class="map-icon">📍</span>Ver en mapa</button> ~18-22€.</div></div>
+        <div class="info-row"><div class="info-label">Tratt. Della Stampa</div><div class="info-val">Zona Trevi. ☎️ +39 06 8901 8741<br><button class="map-btn" onclick="openMap(41.9022,12.4848,'Trattoria Della Stampa Roma')"><span class="map-icon">📍</span>Ver en mapa</button> ~20-25€.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TIPS
+     ============================================================ -->
+<section class="section" id="tips">
+  <div class="tips-hero">
+    <h2>Trucos y<br>consejos</h2>
+    <p>Lo que no viene en las guías y marca la diferencia con niños.</p>
+  </div>
+
+  <div class="page-pad" style="padding-top:1.2rem">
+
+    <div class="sec-title">👶 Con niños en Roma</div>
+    <div class="sec-divider"></div>
+
+    <div class="tip-item"><div class="tip-num">1</div><div class="tip-text"><strong>Agua gratis en cada esquina:</strong> Las fuentes públicas romanas (nasoni — "naricillas") dan agua potable fría gratis. Son pequeñas fuentes de hierro con un caño curvo. Hay una cada 2-3 calles. Lleváis botella reutilizable y rellenad siempre.</div></div>
+    <div class="tip-item"><div class="tip-num">2</div><div class="tip-text"><strong>El patinete plegable:</strong> Para los más pequeños del grupo, un patinete plegable puede ser el objeto más útil del viaje. Los adoquines romanos no son ideales pero en las zonas peatonales va perfecto.</div></div>
+    <div class="tip-item"><div class="tip-num">3</div><div class="tip-text"><strong>Paradas de descanso:</strong> Planificad descansos explícitos en parques o plazas. Los jardines de Villa Borghese y el Giardino degli Aranci son perfectos para que corran un rato.</div></div>
+    <div class="tip-item"><div class="tip-num">4</div><div class="tip-text"><strong>Restaurantes con niños:</strong> Italia es muy tolerante con los niños en restaurantes. Nadie os mirará mal. Pedid <strong>acqua naturale</strong> (sin gas), es más barata.</div></div>
+    <div class="tip-item"><div class="tip-num">5</div><div class="tip-text"><strong>Aseos públicos:</strong> Los de los museos son los mejores (gratuitos una vez dentro). En la calle, la mayoría de bares dejan usar el baño si consumís algo (un agua: 1€).</div></div>
+
+    <div class="sec-title">🔒 Seguridad</div>
+    <div class="sec-divider"></div>
+
+    <div class="tip-item"><div class="tip-num">⚠️</div><div class="tip-text"><strong>Carteristas:</strong> El mayor riesgo. Metro, Fontana di Trevi, Coliseo. Bolsa delantera o riñonera. Nunca la mochila sola colgada detrás sin vigilarla.</div></div>
+    <div class="tip-item"><div class="tip-num">⚠️</div><div class="tip-text"><strong>"Gladiadores" del Coliseo:</strong> Hombres disfrazados que se ofrecen para fotos. Cobran 20-30€. Decid que no con amabilidad y seguid andando.</div></div>
+    <div class="tip-item"><div class="tip-num">⚠️</div><div class="tip-text"><strong>Restaurantes trampa:</strong> Si tienen el menú en 10 idiomas en la puerta y un camarero llamándoos desde la calle → precio inflado y calidad mediocre. Evitadlos.</div></div>
+    <div class="tip-item"><div class="tip-num">⚠️</div><div class="tip-text"><strong>Las pulseras "gratis":</strong> Alguien os pone una pulsera en la muñeca y luego pide dinero por ella. No aceptéis nada de extraños.</div></div>
+
+    <div class="sec-title">📱 Apps imprescindibles</div>
+    <div class="sec-divider"></div>
+
+    <div class="tip-item"><div class="tip-num">📍</div><div class="tip-text"><strong>Google Maps:</strong> Descargad el mapa de Roma para usar sin internet. Mapas → Descargar → Roma.</div></div>
+    <div class="tip-item"><div class="tip-num">🚌</div><div class="tip-text"><strong>ATAC Roma:</strong> Autobuses y metro en tiempo real. Compra de billetes.</div></div>
+    <div class="tip-item"><div class="tip-num">🚕</div><div class="tip-text"><strong>IT Taxi:</strong> Taxis oficiales romanos. Más fiable que parar uno en la calle.</div></div>
+    <div class="tip-item"><div class="tip-num">🍽️</div><div class="tip-text"><strong>TheFork (El Tenedor):</strong> Reservas de restaurante con descuentos habituales del 20-30%.</div></div>
+
+    <div class="sec-title">🗣️ Frases básicas</div>
+    <div class="sec-divider"></div>
+
+    <div class="card pb3">
+      <div class="card-body">
+        <div class="info-row"><div class="info-label">Un caffè</div><div class="info-val">Un café (espresso solo)</div></div>
+        <div class="info-row"><div class="info-label">Il conto</div><div class="info-val">La cuenta, por favor</div></div>
+        <div class="info-row"><div class="info-label">Dov'è il bagno?</div><div class="info-val">¿Dónde está el baño?</div></div>
+        <div class="info-row"><div class="info-label">Quanto costa?</div><div class="info-val">¿Cuánto cuesta?</div></div>
+        <div class="info-row"><div class="info-label">Tavolo per 4?</div><div class="info-val">¿Mesa para 4 personas?</div></div>
+        <div class="info-row"><div class="info-label">È buonissimo!</div><div class="info-val">¡Está buenísimo! (siempre funciona)</div></div>
+        <div class="info-row"><div class="info-label">Per favore</div><div class="info-val">Por favor</div></div>
+        <div class="info-row"><div class="info-label">Grazie mille</div><div class="info-val">Muchas gracias</div></div>
+      </div>
+    </div>
+
+    <div class="frase">"Tutti i portano a Roma."<span>— Y todos los días llevan a comer bien.</span></div>
+  </div>
+</section>
+
+<script>
+// Abre Maps en iOS (Apple Maps) o Android/otros (Google Maps)
+function openMap(lat, lng, name) {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const encodedName = encodeURIComponent(name);
+  if (isIOS) {
+    window.open(`maps://maps.apple.com/?q=${encodedName}&ll=${lat},${lng}`, '_blank');
+  } else {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+  }
+}
+
+function show(id) {
+  // Ocultar el hero tras la primera navegación
+  const hero = document.getElementById('top');
+  if (hero && !hero.classList.contains('hidden')) {
+    hero.classList.add('hidden');
+  }
+
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+
+  // Scroll al nav, no al hero
+  document.querySelector('.nav-bar').scrollIntoView({ behavior: 'instant' });
+  window.scrollTo(0, document.querySelector('.nav-bar').offsetTop);
+}
+
+function toggle(btn) {
+  const body = btn.nextElementSibling;
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ── BANNER DE INSTALACIÓN ──
+let deferredPrompt = null;
+
+// Android: capturar evento beforeinstallprompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner('android');
+});
+
+// iOS: mostrar instrucciones manuales si no está instalada
+window.addEventListener('load', () => {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true
+    || window.matchMedia('(display-mode: standalone)').matches;
+
+  if (!isStandalone) {
+    if (isIOS) {
+      showInstallBanner('ios');
+    }
+    // Android: si no saltó beforeinstallprompt, mostrar igual pasados 2s
+    setTimeout(() => {
+      if (!deferredPrompt && !isIOS && !isStandalone) {
+        showInstallBanner('android-manual');
+      }
+    }, 2000);
+  }
+});
+
+function showInstallBanner(type) {
+  if (document.getElementById('install-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'install-banner';
+  banner.style.cssText = `
+    position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:linear-gradient(135deg,#1a0a00,#3d1800);
+    border-top:2px solid #c9933a;
+    padding:0.9rem 1rem 1.1rem;
+    display:flex;align-items:center;gap:0.8rem;
+    box-shadow:0 -4px 20px rgba(0,0,0,0.4);
+    animation: slideUp 0.3s ease;
+  `;
+
+  let html = '';
+  if (type === 'ios') {
+    html = `
+      <span style="font-size:1.6rem">📲</span>
+      <div style="flex:1">
+        <div style="color:#e8b86d;font-weight:600;font-size:0.85rem;margin-bottom:2px">Instala esta guía en tu iPhone</div>
+        <div style="color:rgba(255,220,160,0.75);font-size:0.75rem">Pulsa <strong style="color:#e8b86d">⬆️ Compartir</strong> → <strong style="color:#e8b86d">Añadir a inicio</strong></div>
+      </div>
+      <button onclick="document.getElementById('install-banner').remove()" style="background:none;border:none;color:#c9933a;font-size:1.3rem;cursor:pointer;padding:4px">✕</button>
+    `;
+  } else if (type === 'android') {
+    html = `
+      <span style="font-size:1.6rem">📲</span>
+      <div style="flex:1">
+        <div style="color:#e8b86d;font-weight:600;font-size:0.85rem;margin-bottom:2px">Instala esta guía en tu móvil</div>
+        <div style="color:rgba(255,220,160,0.75);font-size:0.75rem">Se guardará como app sin necesidad de internet</div>
+      </div>
+      <button onclick="installApp()" style="background:#c9933a;border:none;color:#1a0a00;font-weight:700;font-size:0.8rem;border-radius:20px;padding:6px 14px;cursor:pointer">Instalar</button>
+      <button onclick="document.getElementById('install-banner').remove()" style="background:none;border:none;color:#c9933a;font-size:1.3rem;cursor:pointer;padding:4px">✕</button>
+    `;
+  } else {
+    html = `
+      <span style="font-size:1.6rem">📲</span>
+      <div style="flex:1">
+        <div style="color:#e8b86d;font-weight:600;font-size:0.85rem;margin-bottom:2px">Instala esta guía en tu móvil</div>
+        <div style="color:rgba(255,220,160,0.75);font-size:0.75rem">Chrome: menú <strong style="color:#e8b86d">⋮</strong> → <strong style="color:#e8b86d">Añadir a pantalla de inicio</strong></div>
+      </div>
+      <button onclick="document.getElementById('install-banner').remove()" style="background:none;border:none;color:#c9933a;font-size:1.3rem;cursor:pointer;padding:4px">✕</button>
+    `;
+  }
+
+  banner.innerHTML = html;
+  const style = document.createElement('style');
+  style.textContent = '@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}';
+  document.head.appendChild(style);
+  document.body.appendChild(banner);
+}
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      const b = document.getElementById('install-banner');
+      if (b) b.remove();
+    });
+  }
+}
+</script>
+</body>
+</html>
