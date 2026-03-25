@@ -64,7 +64,7 @@
   // 3. Service Worker — cachea el HTML completo en la primera visita para uso offline total
   if ('serviceWorker' in navigator) {
     const swCode = `
-const CACHE = 'roma-v19';
+const CACHE = 'roma-v21';
 const FONTS = [
   'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap'
 ];
@@ -1305,7 +1305,13 @@ input:focus, textarea:focus, select:focus {
             <div class="card-desc">A las 22h es hora normal de cenar en Roma. La zona tiene opciones para todos los estados de ánimo después de un día de viaje:</div>
             <div style="height:0.5rem"></div>
 
-            <div class="resto-type">🍽️ Mesa y mantel</div>
+            <div class="info-row" style="background:rgba(255,200,0,0.06);border-left:3px solid #f1c40f;border-radius:0 8px 8px 0;padding:0.5rem 0">
+              <div class="info-label" style="color:#d4a017">⭐ RESERVADO</div>
+              <div class="info-val"><strong>Ristorante Pizza Forum</strong> · 22:00h · Pizza y cocina romana junto al Coliseo. Reserva confirmada.<br><a href="https://maps.app.goo.gl/e6fwvbQo3o2BViPu6" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;margin-top:6px;background:rgba(241,196,15,0.15);color:#d4a017;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;border:1px solid rgba(241,196,15,0.4)">📍 Google Maps</a></div>
+            </div>
+
+            <div style="height:0.5rem"></div>
+            <div class="resto-type">🍽️ Otras opciones si cambiáis</div>
             <div class="info-row">
               <div class="info-label">Trattoria Luzzi</div>
               <div class="info-val">La más antigua del barrio (desde 1945). Ambiente de tablecloth de papel, cocina romana clásica sin florituras: amatriciana, cacio e pepe, abbacchio. Muy frecuentada por locales del barrio.<br><a href="tel:+39067096332" style="color:inherit;text-decoration:none">☎️ +39 06 709 6332</a><br><button class="map-btn" onclick="openMap(41.8900,12.4950,'Trattoria Luzzi Roma Colosseo')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~18-22 €/pers.</span></div>
@@ -1649,7 +1655,7 @@ input:focus, textarea:focus, select:focus {
           </div>
           <div class="card-body">
             <div class="resto-type">🍽️ Mesa y mantel</div>
-            <div class="info-row"><div class="info-label">✅ Reservado</div><div class="info-val"><strong>Pizzería Luzzi</strong> · 14:30h · La más antigua del barrio (desde 1945). Cocina romana clásica: amatriciana, cacio e pepe. Ambiente de tablecloth de papel.<br><a href="tel:+390646071143" style="color:inherit;text-decoration:none">☎️ +39 06 446 7143</a><br><button class="map-btn" onclick="openMap(41.8900,12.4950,'Pizzeria Luzzi Roma Colosseo')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~18-22 €/pers.</span></div></div>
+            <div class="info-row" style="background:rgba(255,200,0,0.06);border-left:3px solid #f1c40f;border-radius:0 8px 8px 0;padding:0.5rem 0"><div class="info-label" style="color:#d4a017">⭐ RESERVADO</div><div class="info-val"><strong>Pizzería Luzzi</strong> · 14:30h · La más antigua del barrio (desde 1945). Cocina romana clásica: amatriciana, cacio e pepe. Ambiente de tablecloth de papel.<br><a href="tel:+390646071143" style="color:inherit;text-decoration:none">☎️ +39 06 446 7143</a><br><button class="map-btn" onclick="openMap(41.8900,12.4950,'Pizzeria Luzzi Roma Colosseo')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~18-22 €/pers.</span></div></div>
             <div class="info-row"><div class="info-label">Trattoria Vecchia Roma</div><div class="info-val">Coda alla vaccinara, cacio e pepe, pasta fresca. Local de toda la vida, ambiente informal con manteles de papel.<br><a href="tel:+39064467143" style="color:inherit;text-decoration:none">☎️ +39 06 446 7143</a><br><button class="map-btn" onclick="openMap(41.8937,12.5024,'Trattoria Vecchia Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-25 €/pers.</span></div></div>
             <div style="height:0.7rem"></div>
             <div class="resto-type">🍕 Alternativa familiar — niños felices</div>
@@ -2219,7 +2225,7 @@ input:focus, textarea:focus, select:focus {
 
     <div class="tl-item">
       <div class="tl-left"><div class="tl-time">13:30</div><div class="tl-line"></div></div>
-      <div class="tl-content"><div class="card"><div class="card-header"><div class="card-icon comida">🍝</div><div><div class="card-name">Almuerzo · Agrodolce</div><div class="card-subtitle">Reservado · V. dei Crociferi 25 · Zona Trevi</div></div></div><div class="card-body"><div class="info-row"><div class="info-label">Agrodolce</div><div class="info-val">Cocina romana de mercado, ambiente cuidado. Muy bien situado entre Borghese/Pincio y el Panteón.<br><a href="https://maps.app.goo.gl/Lv3Cj8T2nsgN496A6" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;margin-top:6px;background:rgba(201,147,58,0.15);color:var(--gold);border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;border:1px solid rgba(201,147,58,0.3)">📍 Ver en Google Maps</a><br><button class="map-btn" style="margin-top:4px" onclick="openMap(41.9002,12.4828,'Agrodolce Roma Via dei Crociferi')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-28 €/pers.</span></div></div></div></div></div>
+      <div class="tl-content"><div class="card"><div class="card-header"><div class="card-icon comida">🍝</div><div><div class="card-name">Almuerzo · Agrodolce</div><div class="card-subtitle">Reservado · V. dei Crociferi 25 · Zona Trevi</div></div></div><div class="card-body"><div class="info-row" style="background:rgba(255,200,0,0.06);border-left:3px solid #f1c40f;border-radius:0 8px 8px 0;padding:0.5rem 0"><div class="info-label" style="color:#d4a017">⭐ RESERVADO · Agrodolce</div><div class="info-val">Cocina romana de mercado, ambiente cuidado. Muy bien situado entre Borghese/Pincio y el Panteón.<br><a href="https://maps.app.goo.gl/Lv3Cj8T2nsgN496A6" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;margin-top:6px;background:rgba(201,147,58,0.15);color:var(--gold);border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;border:1px solid rgba(201,147,58,0.3)">📍 Ver en Google Maps</a><br><button class="map-btn" style="margin-top:4px" onclick="openMap(41.9002,12.4828,'Agrodolce Roma Via dei Crociferi')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~20-28 €/pers.</span></div></div></div></div></div>
     </div>
 
 <div class="tl-item">
@@ -2401,9 +2407,9 @@ input:focus, textarea:focus, select:focus {
       <div class="tl-left"><div class="tl-time">13:00</div><div class="tl-line"></div></div>
       <div class="tl-content"><div class="card">
         <div class="card-header"><div class="card-icon comida">🍝</div>
-          <div><div class="card-name">Almuerzo · Zona Trevi / Spagna</div><div class="card-subtitle">Antes de las visitas de tarde</div></div>
+          <div><div class="card-name">Almuerzo · Zona Trevi / Spagna</div><div class="card-subtitle">Reservado · Osteria da Fortunata</div></div>
         </div>
-        <div class="card-body"><div class="resto-type">🍽️ Mesa y mantel</div><div class="info-row"><div class="info-label">Osteria da Fortunata</div><div class="info-val">La carbonara 'mejor del mundo'. Hacen la pasta a mano en el escaparate.<br><a href="tel:+390660667391" style="color:inherit;text-decoration:none">☎️ +39 06 6066 7391</a><br><button class="map-btn" onclick="openMap(41.8961,12.4717,'Osteria da Fortunata Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class='resto-price'>💶 ~20-25 €/pers.</span></div></div></div>
+        <div class="card-body"><div class="resto-type">🍽️ Mesa y mantel</div><div class="info-row" style="background:rgba(255,200,0,0.06);border-left:3px solid #f1c40f;border-radius:0 8px 8px 0;padding:0.5rem 0"><div class="info-label" style="color:#d4a017">⭐ RESERVADO · Osteria da Fortunata</div><div class="info-val">La carbonara 'mejor del mundo'. Hacen la pasta a mano en el escaparate.<br><a href="tel:+390660667391" style="color:inherit;text-decoration:none">☎️ +39 06 6066 7391</a><br><button class="map-btn" onclick="openMap(41.8961,12.4717,'Osteria da Fortunata Roma')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class='resto-price'>💶 ~20-25 €/pers.</span></div></div></div>
       </div></div>
     </div>
 <div class="tl-item">
@@ -2499,7 +2505,7 @@ input:focus, textarea:focus, select:focus {
 
     <div class="tl-item">
       <div class="tl-left"><div class="tl-time">19:00</div><div class="tl-line"></div></div>
-      <div class="tl-content"><div class="card"><div class="card-header"><div class="card-icon comida">🍷</div><div><div class="card-name">Prosciutteria Cantina dei Papi</div><div class="card-subtitle">Taglieri · Via della Scala 71 · Trastevere · Abre 11:30h</div></div></div><div class="card-body"><div class="info-row"><div class="info-label">Cantina dei Papi</div><div class="info-val">Tablas de embutidos, quesos y pan artesano en un local rústico de ladrillo visto. Se pide en la barra. Uno de los locales más auténticos del Trastevere para cenar sin formalismos.<br><a href="https://www.cantinadeipapi.com" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;margin-top:6px;background:#2471a3;color:white;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none">🌐 Web oficial</a><br><button class="map-btn" style="margin-top:4px" onclick="openMap(41.8893,12.4694,'Prosciutteria Cantina dei Papi Trastevere')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~15-25 €/pers.</span></div></div></div></div></div>
+      <div class="tl-content"><div class="card"><div class="card-header"><div class="card-icon comida">🍷</div><div><div class="card-name">Prosciutteria Cantina dei Papi</div><div class="card-subtitle">⭐ Reservado 21:30h · Via della Scala 71 · Trastevere</div></div></div><div class="card-body"><div class="info-row" style="background:rgba(255,200,0,0.06);border-left:3px solid #f1c40f;border-radius:0 8px 8px 0;padding:0.5rem 0"><div class="info-label" style="color:#d4a017">⭐ RESERVADO · 21:30h</div><div class="info-val">Tablas de embutidos, quesos y pan artesano en un local rústico de ladrillo visto. Se pide en la barra. Uno de los locales más auténticos del Trastevere para cenar sin formalismos.<br><a href="https://www.cantinadeipapi.com" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;margin-top:6px;background:#2471a3;color:white;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none">🌐 Web oficial</a><br><button class="map-btn" style="margin-top:4px" onclick="openMap(41.8893,12.4694,'Prosciutteria Cantina dei Papi Trastevere')"><span class="map-icon">📍</span>Ver en mapa</button><br><span class="resto-price">💶 ~15-25 €/pers.</span></div></div></div></div></div>
     </div>
 
 <div class="tl-item">
@@ -3935,6 +3941,3 @@ document.addEventListener('DOMContentLoaded', renderDeiMusei);
 </script>
 </body>
 </html>
-
-
-
